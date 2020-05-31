@@ -135,5 +135,4 @@ public abstract class Commands extends ClientManager implements Command {
             System.out.println(s.getMessage());
         }
     }
-
 }

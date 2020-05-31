@@ -40,32 +40,36 @@ public class ConnectionCmd extends Commands implements Command {
             drawTable(query);
         }
 
-        private void initSession() {
+        private void initSession() throws SQLException {
             System.out.println("DB Connected, alias: " + dbConnection.getCfg().getAlias());
             showConnectionConfig();
             sc.reset();
             while (true) {
                 System.out.print("CRUD> ");
                 String query = sc.nextLine();
-                query = query.toLowerCase().trim();
-                if (query.equals(CommandSet.BACK.getCommandText())) {
-                    System.out.println("Connection closed");
-                    sc.reset();
-                    break;
-                } else if (query.equals("?") || query.equals(CommandSet.HELP.getCommandText()))
-                    printHelp();
-                else if (
-                        query.startsWith("insert") ||
-                                query.startsWith("delete") ||
-                                query.startsWith("create"))
-                    updCommand(query);
-                else if (query.startsWith("select"))
-                    select(query);
-                else if (query.equals(CommandSet.CONFIG.getCommandText()))
-                    showConnectionConfig();
-                else if (query.startsWith(CommandSet.SET_TABLE.getCommandText())) {
-                    commandService(new SetTableCmd(query, alias));
-                } else System.out.println("Unknown command");
+                if (!query.isEmpty()) {
+                    query = query.toLowerCase().trim();
+                    if (query.equals(CommandSet.BACK.getCommandText())) {
+                        System.out.println("Connection closed");
+                        sc.reset();
+                        break;
+                    } else if (query.equals("?") || query.equals(CommandSet.HELP.getCommandText()))
+                        printHelp();
+                    else if (
+                            query.startsWith("insert") ||
+                                    query.startsWith("delete") ||
+                                    query.startsWith("create"))
+                        updCommand(query);
+                    else if (query.startsWith("select"))
+                        select(query);
+                    else if (query.equals(CommandSet.CONFIG.getCommandText()))
+                        showConnectionConfig();
+                    else if (query.startsWith(CommandSet.SET_TABLE.getCommandText())) {
+                        commandService(new SetTableCmd(query, alias));
+                        connection.close();
+                        execute();
+                    } else System.out.println("Unknown command");
+                }
             }
         }
     }
