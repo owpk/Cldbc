@@ -8,23 +8,29 @@ public class AliasParamCmd extends Commands implements Command {
     public AliasParamCmd(String command) {
         super(command);
         cmd = CommandSet.ALIAS_PARAM;
+        alias = obtain(0);
     }
 
     @Override
-    protected void parseRowCommand() {
-
-    }
-
-    @Override
-    protected void printThisCommandHelp() {
-        System.out.println("usage");
+    protected boolean notEmpty() {
+        return alias != null && !alias.isEmpty();
     }
 
     @Override
     public void execute() {
-        System.out.println(
-                connectionManager.getConnectionList()
-                        .get(alias).getCfg().showParams());
+        if (notEmpty()) {
+            System.out.println(
+                    connectionManager
+                            .getConnectionList()
+                            .get(alias)
+                            .getCfg()
+                            .showParams());
+        }
+    }
 
+    @Override
+    public void handleException() {
+        printThisCommandHelp();
+        showAvailableAliasList();
     }
 }

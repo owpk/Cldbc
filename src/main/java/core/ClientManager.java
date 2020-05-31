@@ -1,7 +1,6 @@
 package core;
 
 import commands.*;
-import core.commands.*;
 import connection.DBConnection;
 
 import java.sql.Connection;
@@ -20,14 +19,30 @@ public class ClientManager {
         sc = new Scanner(System.in);
     }
 
+    protected void showAvailableAliasList() {
+        System.out.print("Available aliases: ");
+        connectionManager.getConnectionList().forEach((key, value) -> System.out.print(key + " | "));
+        System.out.println("");
+    }
+
+    public void printHelp() {
+        CommandSet[] commands = CommandSet.values();
+        System.out.println("Available commands: ");
+        Arrays.stream(commands).forEach(x -> System.out.println(x.getCommandText() + x.getCommandDescription()));
+    }
+
     protected void commandService(Command c) {
-        c.execute();
+        try {
+            c.execute();
+        } catch (NullPointerException | CmdException e) {
+            c.handleException();
+        }
     }
 
     public void commandListener() {
         while (true) {
             System.out.print("cldbc> ");
-            String command = sc.nextLine();
+            String command = sc.next();
             command = command.toLowerCase().trim();
 
             if (command.equals(CommandSet.EXIT.getCommandText())) {
@@ -35,12 +50,13 @@ public class ClientManager {
                 break;
             } else if (command.startsWith(CommandSet.ALIAS_PARAM.getCommandText()))
                 commandService(new AliasParamCmd(command));
-            else if (command.equals(CommandSet.CONFIG.getCommandText()))
+            else if (command.startsWith(CommandSet.CONFIG.getCommandText()))
                 commandService(new ConfigCmd(command));
-            else if (command.equals(CommandSet.ALIAS.getCommandText()))
-                commandService(new ConfigCmd());
+            else if (command.equals(CommandSet.ALIAS.getCommandText())) {
+                showAvailableAliasList();
+            }
             else if (command.equals(CommandSet.HELP.getCommandText()) || command.equals("?"))
-                Commands.printHelp();
+                printHelp();
             else if (command.startsWith(CommandSet.CONNECT.getCommandText()))
                 commandService(new ConnectionCmd(command));
             else if (command.startsWith(CommandSet.SET_TABLE.getCommandText()))
@@ -48,7 +64,7 @@ public class ClientManager {
             else {
                 System.out.println("Unknown command");
                 System.out.println("If you want to init connection use - connect 'alias_name'");
-                Commands.printHelp();
+                printHelp();
             }
         }
         closeResources();
@@ -57,6 +73,7 @@ public class ClientManager {
     private void closeResources() {
         sc.close();
         try {
+            if (connection != null)
             connection.close();
         } catch (SQLException s) {
             System.out.println("ERROR DB connection has not closed");

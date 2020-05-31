@@ -7,45 +7,48 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class Commands extends ClientManager implements Command {
-    private String rowCmd;
-    private Map<String, String> paramsPool;
+    protected List<String> rowCommandsPool;
+    protected List<String> rowKeyList;
+    protected Map<String, String> paramsPool;
+    protected Map<String, String> keyPool;
     protected CommandSet cmd;
 
-    public Commands(String rowCmd) {
-        this.rowCmd = rowCmd;
+    public Commands(String rowCommand) {
+        rowCommandsPool = new ArrayList<>(Arrays.asList(rowCommand.split(" ")));
+        rowCommandsPool = rowCommandsPool.stream()
+                .skip(1)
+                .filter(x -> x != null && !x.isEmpty())
+                .filter(x -> {
+                    if (x.startsWith("-")) {
+                        rowKeyList.add(x.trim());
+                        return false;
+                    } return true; })
+                .map(String::trim)
+                .collect(Collectors.toList());
         paramsPool = new HashMap<>();
+        keyPool = new HashMap<>();
     }
 
     public Commands() {
     }
 
-    protected String obtain(String element) {
-        parseRowCommand();
-        if (paramsPool.get(element) != null) {
-            return paramsPool.get(element);
-        }
-        else printThisCommandHelp();
+    protected String obtain(int element) {
+        if (rowCommandsPool.size() != 0)
+        return rowCommandsPool.get(element);
         return null;
     }
 
-    protected abstract void parseRowCommand();
+    protected void printWarning() {
+        System.out.println("Wrong usage");
+    }
+
+    protected abstract boolean notEmpty();
 
     protected void printThisCommandHelp() {
         System.out.println(cmd.getCommandText()+cmd.getCommandDescription());
-    }
-
-    public static void printHelp() {
-        CommandSet[] commands = CommandSet.values();
-        System.out.println("Available commands: ");
-        Arrays.stream(commands).forEach(x -> System.out.println(x.getCommandText() + x.getCommandDescription()));
-    }
-
-    protected void showAvailableAliasList() {
-        System.out.print("Available aliases: ");
-        connectionManager.getConnectionList().forEach((key, value) -> System.out.print(key + " | "));
-        System.out.println("");
     }
 
     public void showConnectionConfig() {

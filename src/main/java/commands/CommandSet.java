@@ -3,7 +3,7 @@ package commands;
 public enum CommandSet {
     EXIT("exit", ""),
     ALIAS("al", " - (aliases) shows available aliases"),
-    CONFIG("cfg", " - (config) shows current connection configuration (only works if the connection is established)"),
+    CONFIG("cfg", " - (config) shows current connection configuration. Usage: cfg 'alias_name', from CRUD menu - cfg"),
     HELP("help", ""),
     CONNECT("con", " - (connection) usage: con 'alias_name'"),
     BACK("back", " - back from CRUD menu"),
