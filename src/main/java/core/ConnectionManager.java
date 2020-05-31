@@ -1,8 +1,10 @@
 package core;
 
-import core.connection.DBConnection;
-import core.connection.MySqlConn;
-import core.connection.PostgresConn;
+import connection.DBConnection;
+import connection.MySqlConn;
+import connection.PostgresConn;
+import util.ConfigParams;
+import util.ConfigReader;
 
 import java.util.HashMap;
 import java.util.List;

@@ -1,4 +1,4 @@
-package core.commands;
+package commands;
 
 public enum CommandSet {
     EXIT("exit", ""),
