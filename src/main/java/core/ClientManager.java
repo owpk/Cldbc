@@ -1,5 +1,9 @@
 package core;
 
+import core.commands.CRUDCommands;
+import core.commands.Command;
+import core.commands.CommandSet;
+import core.commands.MenuCommands;
 import core.connection.DBConnection;
 
 import java.sql.Connection;
@@ -7,7 +11,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
-import java.util.function.Function;
 
 public class ClientManager {
 
@@ -15,57 +18,11 @@ public class ClientManager {
     private Connection connection;
     private DBConnection dbConnection;
     private Scanner sc;
+    private Command command;
 
     public ClientManager() {
         connectionManager = new ConnectionManager();
         sc = new Scanner(System.in);
-    }
-
-    private abstract class Command {
-        protected String rowCommandLine;
-        protected String[] rowCommands;
-        protected String name;
-        protected Map<String, String> params;
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public Command(String rowCommandLine) {
-            this.rowCommandLine = rowCommandLine;
-            params = new HashMap<>();
-            rowCommands = rowCommandLine.split(" ");
-            name = rowCommands[0].trim();
-            parseCommand();
-        }
-
-        protected abstract void parseCommand();
-
-        public void putCommand(String key, String value) {
-            params.put(key, value);
-        }
-
-        public Map<String, String> getParams() {
-            return params;
-        }
-    }
-
-    private enum Commands {
-        EXIT("exit", ""),
-        ALIAS("al", " - (aliases) shows available aliases"),
-        CONFIG("cfg", " - (config) shows current connection configuration (only works if the connection is established)"),
-        HELP("help", ""),
-        CONNECT("con", " - (connection) usage: con 'alias_name'"),
-        BACK("back", " - back from CRUD menu"),
-        ALIAS_PARAM("alp", " - (alias parameters) usage: alp 'alias_name'. Shows selected alias parameters"),
-        SET_TABLE("stb", " - (set table) usage: if connected - stb 'table_name' else - stb 'alisa_name' 'db_name'");
-        private final String commandText;
-        private final String commandDescription;
-
-        Commands(String commandText, String commandDescription) {
-            this.commandDescription = commandDescription;
-            this.commandText = commandText;
-        }
     }
 
     private class ConnectionOperator {
@@ -83,7 +40,7 @@ public class ClientManager {
                 System.out.print("CRUD> ");
                 String query = sc.nextLine();
                 query = query.toLowerCase().trim();
-                if (query.equals(Commands.BACK.commandText)) {
+                if (query.equals(CommandSet.BACK.getCommandText())) {
                     System.out.println("Connection closed");
                     sc.reset();
                     break;
@@ -97,11 +54,10 @@ public class ClientManager {
                     updCommand(query);
                 else if (query.startsWith("select"))
                     select(query);
-                else if (query.equals(Commands.CONFIG.commandText))
+                else if (query.equals(CommandSet.CONFIG.getCommandText()))
                     showConnectionConfig();
-                else if (query.startsWith(Commands.SET_TABLE.commandText)) {
-                    Command c = new DBCommand(query);
-                    setDBName(c);
+                else if (query.startsWith(CommandSet.SET_TABLE.getCommandText())) {
+                    setDBName(new CRUDCommands(query, alias));
                 } else System.out.println("Unknown command");
 
             }
@@ -122,14 +78,15 @@ public class ClientManager {
     }
 
     private void setDBName(Command c) {
-        String dbName = c.params.get(1);
-        String alias = c.params.get(0);
-        if (dbName.equals("")) {
-            System.out.println("Wrong dbName");
-            System.out.println(Commands.SET_TABLE.commandText + Commands.SET_TABLE.commandDescription);
+        if (c.checkZeroParams() || c.getParams().size() == 1) {
+            System.out.println("Wrong usage");
+            System.out.println(CommandSet.SET_TABLE.getCommandText() + CommandSet.SET_TABLE.getCommandDescription());
             return;
+        } else {
+            String dbName = c.getDBName();
+            String alias = c.getAlias();
+            connectionManager.getConnectionList().get(alias).getCfg().setDbName(dbName);
         }
-        connectionManager.getConnectionList().get(alias).getCfg().setDbName(dbName);
     }
 
     public void commandListener() {
@@ -138,23 +95,23 @@ public class ClientManager {
             String command = sc.nextLine();
             command = command.toLowerCase().trim();
 
-            if (command.equals(Commands.EXIT.commandText)) {
+            if (command.equals(CommandSet.EXIT.getCommandText())) {
                 System.out.println("Exit");
                 break;
-            } else if (command.startsWith(Commands.ALIAS_PARAM.commandText)) {
-                printAliasConfig(command);
-            } else if (command.equals(Commands.CONFIG.commandText)) {
+            } else if (command.startsWith(CommandSet.ALIAS_PARAM.getCommandText())) {
+                printAliasConfig(new MenuCommands(command));
+            } else if (command.equals(CommandSet.CONFIG.getCommandText())) {
                 System.out.println("No connection detected");
-                System.out.println("To init connection use: " + Commands.CONNECT.commandText + " 'alias_name'");
+                System.out.println("To init connection use: " + CommandSet.CONNECT.getCommandText() + " 'alias_name'");
                 showAvailableAliasList();
-            } else if (command.equals(Commands.ALIAS.commandText))
+            } else if (command.equals(CommandSet.ALIAS.getCommandText()))
                 showAvailableAliasList();
-            else if (command.equals(Commands.HELP.commandText) || command.equals("?")) {
+            else if (command.equals(CommandSet.HELP.getCommandText()) || command.equals("?")) {
                 printHelp();
-            } else if (command.startsWith(Commands.CONNECT.commandText)) {
-                connect(command);
-            } else if (command.startsWith(Commands.SET_TABLE.commandText)) {
-                setDBName(new Command(command));
+            } else if (command.startsWith(CommandSet.CONNECT.getCommandText())) {
+                connect(new MenuCommands(command));
+            } else if (command.startsWith(CommandSet.SET_TABLE.getCommandText())) {
+                setDBName(new MenuCommands(command));
             } else {
                 System.out.println("Unknown command");
                 System.out.println("If you want to init connection use - connect 'alias_name'");
@@ -164,14 +121,14 @@ public class ClientManager {
         closeResources();
     }
 
-    private void printAliasConfig(String command) {
-        Command c = new Command(command);
-        String alias = c.params.get(0);
-        if (alias.isEmpty()) {
+    private void printAliasConfig(Command command) {
+        String alias;
+        if (command.checkZeroParams()) {
             System.out.println("Wrong usage");
-            System.out.println(Commands.ALIAS_PARAM.commandText + Commands.ALIAS_PARAM.commandDescription);
+            System.out.println(CommandSet.ALIAS_PARAM.getCommandText() + CommandSet.ALIAS_PARAM.getCommandDescription());
             showAvailableAliasList();
         } else {
+            alias = command.getAlias();
             try {
                 System.out.println(
                         connectionManager.getConnectionList()
@@ -195,35 +152,33 @@ public class ClientManager {
     }
 
     private void printHelp() {
-        Commands[] commands = Commands.values();
+        CommandSet[] commands = CommandSet.values();
         System.out.println("Available commands: ");
-        Arrays.stream(commands).forEach(x -> System.out.println(x.commandText + "  " + x.commandDescription));
+        Arrays.stream(commands).forEach(x -> System.out.println(x.getCommandText() + "  " + x.getCommandDescription()));
     }
 
-    private void connect(String command) {
+    private void connect(Command command) {
         sc.reset();
-        Command c = new Command(command);
-        String alias = c.params.get(0);
-        if (alias.isEmpty()) {
+        String alias;
+        if (command.checkZeroParams()) {
             System.out.println("Select available aliases");
             showAvailableAliasList();
             alias = sc.nextLine();
+        } else alias = command.getAlias();
+        dbConnection = connectionManager.getConnectionList().get(alias);
+        if (dbConnection == null) {
+            System.out.println("Wrong alias");
+            return;
         }
-        if (!alias.isEmpty()) {
-            dbConnection = connectionManager.getConnectionList().get(alias);
-            if (dbConnection == null) {
-                System.out.println("Wrong alias");
-                return;
-            }
-            try {
-                connection = dbConnection.createConn();
-                new ConnectionOperator(alias).initSession();
-                connection.close();
-            } catch (SQLException | ClassNotFoundException s) {
-                System.out.println(s.getMessage());
-            }
+        try {
+            connection = dbConnection.createConn();
+            new ConnectionOperator(alias).initSession();
+            connection.close();
+        } catch (SQLException | ClassNotFoundException s) {
+            System.out.println(s.getMessage());
         }
     }
+
 
     private void closeResources() {
         sc.close();
