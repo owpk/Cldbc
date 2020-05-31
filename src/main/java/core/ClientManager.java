@@ -42,7 +42,7 @@ public class ClientManager {
     public void commandListener() {
         while (true) {
             System.out.print("cldbc> ");
-            String command = sc.next();
+            String command = sc.nextLine();
             command = command.toLowerCase().trim();
 
             if (command.equals(CommandSet.EXIT.getCommandText())) {
