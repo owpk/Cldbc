@@ -44,27 +44,27 @@ public class ClientManager {
             System.out.print("cldbc> ");
             String command = sc.nextLine();
             command = command.toLowerCase().trim();
-
-            if (command.equals(CommandSet.EXIT.getCommandText())) {
-                System.out.println("Exit");
-                break;
-            } else if (command.startsWith(CommandSet.ALIAS_PARAM.getCommandText()))
-                commandService(new AliasParamCmd(command));
-            else if (command.startsWith(CommandSet.CONFIG.getCommandText()))
-                commandService(new ConfigCmd(command));
-            else if (command.equals(CommandSet.ALIAS.getCommandText())) {
-                showAvailableAliasList();
-            }
-            else if (command.equals(CommandSet.HELP.getCommandText()) || command.equals("?"))
-                printHelp();
-            else if (command.startsWith(CommandSet.CONNECT.getCommandText()))
-                commandService(new ConnectionCmd(command));
-            else if (command.startsWith(CommandSet.SET_TABLE.getCommandText()))
-                commandService(new SetTableCmd(command));
-            else {
-                System.out.println("Unknown command");
-                System.out.println("If you want to init connection use - connect 'alias_name'");
-                printHelp();
+            if (!command.isEmpty()) {
+                if (command.equals(CommandSet.EXIT.getCommandText())) {
+                    System.out.println("Exit");
+                    break;
+                } else if (command.startsWith(CommandSet.ALIAS_PARAM.getCommandText()))
+                    commandService(new AliasParamCmd(command));
+                else if (command.startsWith(CommandSet.CONFIG.getCommandText()))
+                    commandService(new ConfigCmd(command));
+                else if (command.equals(CommandSet.ALIAS.getCommandText())) {
+                    showAvailableAliasList();
+                } else if (command.equals(CommandSet.HELP.getCommandText()) || command.equals("?"))
+                    printHelp();
+                else if (command.startsWith(CommandSet.CONNECT.getCommandText()))
+                    commandService(new ConnectionCmd(command));
+                else if (command.startsWith(CommandSet.SET_TABLE.getCommandText()))
+                    commandService(new SetTableCmd(command));
+                else {
+                    System.out.println("Unknown command");
+                    System.out.println("If you want to init connection use - connect 'alias_name'");
+                    printHelp();
+                }
             }
         }
         closeResources();
