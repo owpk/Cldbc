@@ -2,6 +2,8 @@ package commands;
 
 import core.Commands;
 
+import java.util.Scanner;
+
 public class ConfigCmd extends Commands implements Command {
     private String alias;
 
@@ -25,7 +27,7 @@ public class ConfigCmd extends Commands implements Command {
     @Override
     public void execute() throws NullPointerException {
         System.out.println(
-                connectionManager
+                CONNECTION_MANAGER
                         .getConnectionList()
                         .get(alias)
                         .getCfg()

@@ -1,34 +1,13 @@
 package core;
 
 import commands.*;
-import connection.DBConnection;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.*;
 
 public class ClientManager {
-
-    protected final ConnectionManager connectionManager;
-    protected Connection connection;
-    protected DBConnection dbConnection;
-    protected final Scanner sc;
-
-    public ClientManager() {
-        connectionManager = new ConnectionManager();
-        sc = new Scanner(System.in);
-    }
-
-    protected void showAvailableAliasList() {
-        System.out.print("Available aliases: ");
-        connectionManager.getConnectionList().forEach((key, value) -> System.out.print(key + " | "));
-        System.out.println("");
-    }
-
-    public void printHelp() {
-        CommandSet[] commands = CommandSet.values();
-        System.out.println("Available commands: ");
-        Arrays.stream(commands).forEach(x -> System.out.println(x.getCommandText() + x.getCommandDescription()));
+    protected static final Scanner sc = new Scanner(System.in);
+    public static Scanner getScanner() {
+        return sc;
     }
 
     protected void commandService(Command c) {
@@ -53,9 +32,9 @@ public class ClientManager {
                 else if (command.startsWith(CommandSet.CONFIG.getCommandText()))
                     commandService(new ConfigCmd(command));
                 else if (command.equals(CommandSet.ALIAS.getCommandText())) {
-                    showAvailableAliasList();
+                    Commands.showAvailableAliasList();
                 } else if (command.equals(CommandSet.HELP.getCommandText()) || command.equals("?"))
-                    printHelp();
+                    Commands.printHelp();
                 else if (command.startsWith(CommandSet.CONNECT.getCommandText()))
                     commandService(new ConnectionCmd(command));
                 else if (command.startsWith(CommandSet.SET_TABLE.getCommandText()))
@@ -63,7 +42,7 @@ public class ClientManager {
                 else {
                     System.out.println("Unknown command");
                     System.out.println("If you want to init connection use - connect 'alias_name'");
-                    printHelp();
+                    Commands.printHelp();
                 }
             }
         }
@@ -72,12 +51,6 @@ public class ClientManager {
 
     private void closeResources() {
         sc.close();
-        try {
-            if (connection != null)
-            connection.close();
-        } catch (SQLException s) {
-            System.out.println("ERROR DB connection has not closed");
-        }
     }
 
 }

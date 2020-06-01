@@ -1,10 +1,11 @@
 package commands;
 
-
+import connection.DBConnection;
 import core.Commands;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Scanner;
 
 public class ConnectionCmd extends Commands implements Command {
     private String alias;
@@ -42,10 +43,10 @@ public class ConnectionCmd extends Commands implements Command {
 
         private void initSession() throws SQLException {
             System.out.println("DB Connected, alias: " + dbConnection.getCfg().getAlias());
-            showConnectionConfig();
+            //showConnectionConfig();
             sc.reset();
             while (true) {
-                System.out.print("CRUD> ");
+                System.out.print(alias + "> ");
                 String query = sc.nextLine();
                 if (!query.isEmpty()) {
                     query = query.toLowerCase().trim();
@@ -65,7 +66,7 @@ public class ConnectionCmd extends Commands implements Command {
                     else if (query.equals(CommandSet.CONFIG.getCommandText()))
                         showConnectionConfig();
                     else if (query.startsWith(CommandSet.SET_TABLE.getCommandText())) {
-                        commandService(new SetTableCmd(query, alias));
+                        new SetTableCmd(query, alias, sc).execute();
                         connection.close();
                         execute();
                     } else System.out.println("Unknown command");
@@ -77,7 +78,7 @@ public class ConnectionCmd extends Commands implements Command {
     @Override
     public void execute() {
         sc.reset();
-        dbConnection = connectionManager.getConnectionList().get(alias);
+        dbConnection = CONNECTION_MANAGER.getConnectionList().get(alias);
         try {
             connection = dbConnection.createConn();
             new ConnectionOperator(alias).initSession();

@@ -2,6 +2,8 @@ package commands;
 
 import core.Commands;
 
+import java.util.Scanner;
+
 public class AliasParamCmd extends Commands implements Command {
     private String alias;
 
@@ -20,7 +22,7 @@ public class AliasParamCmd extends Commands implements Command {
     public void execute() {
         if (notEmpty()) {
             System.out.println(
-                    connectionManager
+                    CONNECTION_MANAGER
                             .getConnectionList()
                             .get(alias)
                             .getCfg()

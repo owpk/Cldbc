@@ -6,7 +6,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class DBConnection {
+public abstract class DBConnection {
+    protected ConfigParams cfg;
     protected String port;
     protected String host;
     protected String user;
@@ -16,20 +17,16 @@ public class DBConnection {
     protected String dbName;
 
     protected String urlPrefix;
-    protected ConfigParams cfg;
 
     public DBConnection(ConfigParams cfg) {
         this.cfg = cfg;
-        port = cfg.getPort();
-        host = cfg.getHost();
-        user = cfg.getUserName();
-        pass = cfg.getUserPass();
-        dbName = cfg.getDbName();
-        urlParams = cfg.getParams();
+        executeCfg();
     }
 
     protected String createURL() {
-        return urlPrefix + host + ":" + port + "/" + dbName + urlParams;
+        String url = urlPrefix + host + ":" + port + "/" + dbName + urlParams;
+        System.out.println(url);
+        return url;
     }
 
     public Connection createConn() throws ClassNotFoundException, SQLException {
@@ -38,6 +35,20 @@ public class DBConnection {
 
     public ConfigParams getCfg() {
         return cfg;
+    }
+
+    public void setCfg(ConfigParams cfg) {
+        this.cfg = cfg;
+        executeCfg();
+    }
+
+    private void executeCfg() {
+        port = cfg.getPort();
+        host = cfg.getHost();
+        user = cfg.getUserName();
+        pass = cfg.getUserPass();
+        dbName = cfg.getDbName();
+        urlParams = cfg.getParams();
     }
 
 }

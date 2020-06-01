@@ -2,10 +2,9 @@ package commands;
 
 import connection.DBConnection;
 import core.Commands;
-import sun.security.krb5.Config;
 import util.ConfigParams;
 
-import java.sql.SQLException;
+import java.util.Scanner;
 
 public class SetTableCmd extends Commands implements Command {
     /**
@@ -25,7 +24,7 @@ public class SetTableCmd extends Commands implements Command {
         cmd = CommandSet.SET_TABLE;
     }
 
-    public SetTableCmd(String command, String alias) {
+    public SetTableCmd(String command, String alias,  Scanner sc) {
         super(command);
         this.alias = alias;
         dBName = obtain(0);
@@ -35,20 +34,15 @@ public class SetTableCmd extends Commands implements Command {
         return alias != null && !alias.isEmpty() && dBName != null && !dBName.isEmpty();
     }
 
-    public void reconnect() {
-        try {
-            connection = new DBConnection(cfg).createConn();
-        } catch (SQLException | ClassNotFoundException s) {
-            System.out.println(s.getMessage());
-        }
-    }
-
     @Override
     public void execute() throws NullPointerException {
-        if (notEmpty())
-        cfg = connectionManager.getConnectionList().get(alias).getCfg();
-        cfg.setDbName(dBName);
-        System.out.println("DB name changed: " + cfg.getDbName());
+        if (notEmpty()) {
+            dbConnection = CONNECTION_MANAGER.getConnectionList().get(alias);
+            cfg = dbConnection.getCfg();
+            cfg.setDbName(dBName);
+            dbConnection.setCfg(cfg);
+            System.out.println("DB name changed: " + dbConnection.getCfg().getDbName());
+        }
     }
 
     @Override

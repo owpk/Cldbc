@@ -1,6 +1,7 @@
 package util;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -19,6 +20,7 @@ public class ConfigReader {
     private static DocumentBuilder documentBuilder;
     private static Document document;
     private static List<ConfigParams> configList;
+    private static int count;
 
     public static List<ConfigParams> getConfigList() {
         return configList;
@@ -49,48 +51,49 @@ public class ConfigReader {
     private static void parseConfig(NodeList propList, String vendor) {
         ConfigParams config = new ConfigParams();
         config.setVendor(vendor);
-
+        count = 0;
         for (int h = 0; h < propList.getLength(); h++) {
             Node dbName = propList.item(h);
             NodeList dbNameList = dbName.getChildNodes();
+            if (dbName.getNodeType() != Node.TEXT_NODE) {
+                if (dbName.getNodeName().toLowerCase().trim().equals("params")) {
+                    if (dbName.getTextContent() != null)
+                        config.makeParams(
+                                Arrays.asList(dbName.getTextContent().split("\n")));
+                    else config.setParams("");
+                }
 
-            if (dbName.getNodeName().toLowerCase().trim().equals("params")) {
-                if (dbName.getTextContent() != null)
-                    config.makeParams(
-                            Arrays.asList(dbName.getTextContent().split("\n")));
-                else config.setParams("");
-            }
-
-            if (dbName.getNodeName().toLowerCase().trim().equals("conn")) {
-                for (int j = 0; j < dbNameList.getLength(); j++) {
-                    Node props = dbNameList.item(j);
-                    if (props != null && props.getNodeName() != null && props.getNodeType() != Node.TEXT_NODE) {
-                        String conf;
-                        switch (props.getNodeName().toLowerCase().trim()) {
-                            case "alias":
-                                conf = getText(props);
-                                config.setAlias(conf);
-                                break;
-                            case "port":
-                                conf = getText(props);
-                                config.setPort(getBetterConf(conf));
-                                break;
-                            case "dbname":
-                                conf = getText(props);
-                                config.setDbName(getBetterConf(conf));
-                                break;
-                            case "host":
-                                conf = getText(props);
-                                config.setHost(getBetterConf(conf));
-                                break;
-                            case "user":
-                                conf = getText(props);
-                                config.setUserName(getBetterConf(conf));
-                                break;
-                            case "pass":
-                                conf = getText(props);
-                                config.setUserPass(getBetterConf(conf));
-                                break;
+                if (dbName.getNodeName().toLowerCase().trim().equals("conn")) {
+                    for (int j = 0; j < dbNameList.getLength(); j++) {
+                        Node props = dbNameList.item(j);
+                        if (props != null && props.getNodeName() != null && props.getNodeType() != Node.TEXT_NODE) {
+                            String conf;
+                            switch (props.getNodeName().toLowerCase().trim()) {
+                                case "alias":
+                                    conf = getText(props);
+                                    config.setAlias(conf);
+                                    break;
+                                case "port":
+                                    conf = getText(props);
+                                    config.setPort(getBetterConf(conf));
+                                    break;
+                                case "dbname":
+                                    conf = getText(props);
+                                    config.setDbName(getBetterConf(conf));
+                                    break;
+                                case "host":
+                                    conf = getText(props);
+                                    config.setHost(getBetterConf(conf));
+                                    break;
+                                case "user":
+                                    conf = getText(props);
+                                    config.setUserName(getBetterConf(conf));
+                                    break;
+                                case "pass":
+                                    conf = getText(props);
+                                    config.setUserPass(getBetterConf(conf));
+                                    break;
+                            }
                         }
                     }
                 }
@@ -99,15 +102,16 @@ public class ConfigReader {
             configList.add(config);
         }
     }
-
     private static void parseFormat() {
         Node root = document.getDocumentElement();
         NodeList list = root.getChildNodes();
         for (int i = 0; i < list.getLength(); i++) {
             Node itemProps = list.item(i);
             NodeList propList = itemProps.getChildNodes();
-            if (itemProps.getNodeType() != Node.TEXT_NODE)
+
+            if (itemProps.getNodeType() != Node.TEXT_NODE) {
                 parseConfig(propList, itemProps.getNodeName().toLowerCase().trim());
+            }
         }
     }
 

@@ -12,8 +12,8 @@ public class ConfigParams {
     private String userPass;
     private String host;
     private String port;
-    private List<String> paramList;
     private String params;
+    private List<String> paramList;
 
 
     public String showParams() {

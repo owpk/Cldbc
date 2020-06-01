@@ -14,23 +14,35 @@ public class ConnectionManager {
     private DBConnection conn;
     private List<ConfigParams> configParams;
     private Map<String, DBConnection> connectionList;
+    private static ConnectionManager connectionManager;
+    static {
+        connectionManager = new ConnectionManager();
+    }
 
     public Map<String, DBConnection> getConnectionList() {
         return connectionList;
     }
 
-    public ConnectionManager() {
+    private void createCon(DBConnection c, ConfigParams cfg) {
+        conn = c;
+        connectionList.put(cfg.getAlias(), conn);
+    }
+
+    public static ConnectionManager getManager() {
+        return connectionManager;
+    }
+
+
+    private ConnectionManager() {
         connectionList = new HashMap<>();
         configParams = ConfigReader.getConfigList();
         for (ConfigParams cfg : configParams) {
             switch (cfg.getVendor()) {
                 case "mysql" :
-                    conn = new MySqlConn(cfg);
-                    connectionList.put(cfg.getAlias(), conn);
+                    createCon(new MySqlConn(cfg), cfg);
                     break;
                 case "postgres" :
-                    conn = new PostgresConn(cfg);
-                    connectionList.put(cfg.getAlias(), conn);
+                    createCon(new PostgresConn(cfg), cfg);
                     break;
             }
         }
