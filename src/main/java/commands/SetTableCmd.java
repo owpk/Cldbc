@@ -23,7 +23,7 @@ public class SetTableCmd extends Commands implements Command {
         cmd = CommandSet.SET_TABLE;
     }
 
-    public SetTableCmd(String command, String alias,  Scanner sc) {
+    public SetTableCmd(String command, String alias) {
         super(command);
         this.alias = alias;
         dBName = obtain(0);

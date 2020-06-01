@@ -2,7 +2,7 @@ package core;
 
 import util.ConfigReader;
 
-public class App {
+public class Client {
     //TODO refactor scanner (no constructor exchange)
     public static void main(String[] args) {
         ConfigReader.init();

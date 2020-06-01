@@ -64,7 +64,7 @@ public class ConnectionCmd extends Commands implements Command {
                     else if (query.equals(CommandSet.CONFIG.getCommandText()))
                         showConnectionConfig();
                     else if (query.startsWith(CommandSet.SET_TABLE.getCommandText())) {
-                        new SetTableCmd(query, alias, sc).execute();
+                        new SetTableCmd(query, alias).execute();
                         connection.close();
                         execute();
                     } else System.out.println("Unknown command");
