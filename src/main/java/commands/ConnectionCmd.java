@@ -88,7 +88,6 @@ public class ConnectionCmd extends Commands implements Command {
 
     @Override
     public void handleException() {
-        printWarning();
         printThisCommandHelp();
         showAvailableAliasList();
     }

@@ -25,6 +25,7 @@ public abstract class Commands implements Command {
     public Commands(String rowCommand) {
         this.sc = ClientManager.getScanner();
         rowCommandsPool = new ArrayList<>(Arrays.asList(rowCommand.split(" ")));
+        rowKeyList = new ArrayList<>();
         rowCommandsPool = rowCommandsPool.stream()
                 .skip(1)
                 .filter(x -> x != null && !x.isEmpty())
@@ -57,13 +58,11 @@ public abstract class Commands implements Command {
     }
 
     protected String obtain(int element) {
-        if (rowCommandsPool.size() != 0)
+        try {
             return rowCommandsPool.get(element);
-        return null;
-    }
-
-    protected void printWarning() {
-        System.out.println("Wrong usage");
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
     }
 
     protected abstract boolean notEmpty();

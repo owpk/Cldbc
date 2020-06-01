@@ -14,6 +14,7 @@ public class ClientManager {
         try {
             c.execute();
         } catch (NullPointerException | CmdException e) {
+            System.out.println("wrong usage");
             c.handleException();
         }
     }
