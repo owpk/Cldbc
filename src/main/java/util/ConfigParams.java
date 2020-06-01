@@ -1,4 +1,4 @@
-package core;
+package util;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,8 +12,8 @@ public class ConfigParams {
     private String userPass;
     private String host;
     private String port;
-    private List<String> paramList;
     private String params;
+    private List<String> paramList;
 
 
     public String showParams() {

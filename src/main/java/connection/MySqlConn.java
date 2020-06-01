@@ -1,6 +1,6 @@
-package core.connection;
+package connection;
 
-import core.ConfigParams;
+import util.ConfigParams;
 
 import java.sql.Connection;
 import java.sql.SQLException;
