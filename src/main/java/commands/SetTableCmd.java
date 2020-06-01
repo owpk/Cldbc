@@ -1,6 +1,5 @@
 package commands;
 
-import connection.DBConnection;
 import core.Commands;
 import util.ConfigParams;
 

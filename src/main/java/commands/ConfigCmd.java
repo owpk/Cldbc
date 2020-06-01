@@ -2,8 +2,6 @@ package commands;
 
 import core.Commands;
 
-import java.util.Scanner;
-
 public class ConfigCmd extends Commands implements Command {
     private String alias;
 

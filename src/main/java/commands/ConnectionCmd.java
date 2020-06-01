@@ -1,11 +1,9 @@
 package commands;
 
-import connection.DBConnection;
 import core.Commands;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Scanner;
 
 public class ConnectionCmd extends Commands implements Command {
     private String alias;
