@@ -1,11 +1,12 @@
 package commands;
 
 import core.Commands;
+import core.ConnectionManager;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class ConnectionCmd extends Commands implements Command {
+public class ConnectionCmd extends Commands implements CommandInt {
     private String alias;
 
     public ConnectionCmd(String command) {
@@ -76,7 +77,7 @@ public class ConnectionCmd extends Commands implements Command {
     @Override
     public void execute() {
         sc.reset();
-        dbConnection = CONNECTION_MANAGER.getConnectionList().get(alias);
+        dbConnection = ConnectionManager.getManager().getConnectionList().get(alias);
         try {
             connection = dbConnection.createConn();
             new ConnectionOperator(alias).initSession();

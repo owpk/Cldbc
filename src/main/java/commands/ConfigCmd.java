@@ -1,8 +1,9 @@
 package commands;
 
 import core.Commands;
+import core.ConnectionManager;
 
-public class ConfigCmd extends Commands implements Command {
+public class ConfigCmd extends Commands implements CommandInt {
     private String alias;
 
     public ConfigCmd(String command) {
@@ -25,7 +26,7 @@ public class ConfigCmd extends Commands implements Command {
     @Override
     public void execute() throws NullPointerException {
         System.out.println(
-                CONNECTION_MANAGER
+                ConnectionManager.getManager()
                         .getConnectionList()
                         .get(alias)
                         .getCfg()

@@ -15,9 +15,6 @@ public class ConnectionManager {
     private List<ConfigParams> configParams;
     private Map<String, DBConnection> connectionList;
     private static ConnectionManager connectionManager;
-    static {
-        connectionManager = new ConnectionManager();
-    }
 
     public Map<String, DBConnection> getConnectionList() {
         return connectionList;
@@ -29,13 +26,14 @@ public class ConnectionManager {
     }
 
     public static ConnectionManager getManager() {
+        if (connectionManager == null) {
+            connectionManager = new ConnectionManager();
+            connectionManager.fillConnectionList();
+        }
         return connectionManager;
     }
 
-
-    private ConnectionManager() {
-        connectionList = new HashMap<>();
-        configParams = ConfigReader.getConfigList();
+    public void fillConnectionList(){
         for (ConfigParams cfg : configParams) {
             switch (cfg.getVendor()) {
                 case "mysql" :
@@ -46,6 +44,11 @@ public class ConnectionManager {
                     break;
             }
         }
+    }
+
+    private ConnectionManager() {
+        connectionList = new HashMap<>();
+        configParams = ConfigReader.getConfigList();
     }
 
 

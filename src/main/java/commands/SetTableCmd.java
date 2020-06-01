@@ -1,11 +1,10 @@
 package commands;
 
 import core.Commands;
+import core.ConnectionManager;
 import util.ConfigParams;
 
-import java.util.Scanner;
-
-public class SetTableCmd extends Commands implements Command {
+public class SetTableCmd extends Commands implements CommandInt {
     /**
      * change table name
      * from main menu str 'alias_name' 'dbName'
@@ -36,7 +35,7 @@ public class SetTableCmd extends Commands implements Command {
     @Override
     public void execute() throws NullPointerException {
         if (notEmpty()) {
-            dbConnection = CONNECTION_MANAGER.getConnectionList().get(alias);
+            dbConnection = ConnectionManager.getManager().getConnectionList().get(alias);
             cfg = dbConnection.getCfg();
             cfg.setDbName(dBName);
             dbConnection.setCfg(cfg);

@@ -1,6 +1,6 @@
 package core;
 
-import commands.Command;
+import commands.CommandInt;
 import commands.CommandSet;
 import connection.DBConnection;
 
@@ -11,8 +11,7 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class Commands implements Command {
-    protected static final ConnectionManager CONNECTION_MANAGER = ConnectionManager.getManager();
+public abstract class Commands implements CommandInt {
     protected List<String> rowCommandsPool;
     protected List<String> rowKeyList;
     protected Map<String, String> paramsPool;
@@ -44,7 +43,7 @@ public abstract class Commands implements Command {
 
     public static void showAvailableAliasList() {
         System.out.print("Available aliases: ");
-        CONNECTION_MANAGER.getConnectionList().forEach((key, value) -> System.out.print(key + " | "));
+        ConnectionManager.getManager().getConnectionList().forEach((key, value) -> System.out.print(key + " | "));
         System.out.println("");
     }
 

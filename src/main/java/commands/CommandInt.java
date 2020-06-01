@@ -1,6 +1,6 @@
 package commands;
 
-public interface Command {
+public interface CommandInt {
     void execute();
     void handleException();
 }

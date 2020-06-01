@@ -1,8 +1,9 @@
 package commands;
 
 import core.Commands;
+import core.ConnectionManager;
 
-public class AliasParamCmd extends Commands implements Command {
+public class AliasParamCmd extends Commands implements CommandInt {
     private String alias;
 
     public AliasParamCmd(String command) {
@@ -20,7 +21,7 @@ public class AliasParamCmd extends Commands implements Command {
     public void execute() {
         if (notEmpty()) {
             System.out.println(
-                    CONNECTION_MANAGER
+                    ConnectionManager.getManager()
                             .getConnectionList()
                             .get(alias)
                             .getCfg()

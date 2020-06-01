@@ -10,7 +10,7 @@ public class ClientManager {
         return sc;
     }
 
-    private void commandService(Command c) {
+    private void commandService(CommandInt c) {
         try {
             c.execute();
         } catch (NullPointerException | CmdException e) {
