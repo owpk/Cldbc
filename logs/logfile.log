@@ -1,0 +1,8 @@
+INFO  2020-06-04 01:44:22 [main] core.Commands (Commands.java:60) - Index: 0, Size: 0
+INFO  2020-06-04 01:44:22 [main] commandListeners.MainClientListener (MainClientListener.java:28) - null
+INFO  2020-06-04 01:55:04 [main] core.Commands (Commands.java:60) - Index: 0, Size: 0
+INFO  2020-06-04 01:55:04 [main] commandListeners.BaseListener (BaseListener.java:55) - null
+INFO  2020-06-04 01:58:16 [main] core.Commands (Commands.java:60) - Index: 0, Size: 0
+INFO  2020-06-04 01:58:16 [main] commandListeners.BaseListener (BaseListener.java:52) - null
+INFO  2020-06-04 02:07:09 [main] core.Commands (Commands.java:60) - Index: 0, Size: 0
+INFO  2020-06-04 02:07:09 [main] commandListeners.BaseListener (BaseListener.java:53) - null

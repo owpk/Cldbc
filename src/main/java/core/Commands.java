@@ -2,16 +2,15 @@ package core;
 
 import commands.CommandInt;
 import commands.CommandSet;
-import connection.DBConnection;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class Commands implements CommandInt {
+    private static final Logger logger = LogManager.getLogger(Commands.class.getName());
     protected List<String> rowCommandsPool;
     protected List<String> rowKeyList;
     protected Map<String, String> paramsPool;
@@ -58,6 +57,7 @@ public abstract class Commands implements CommandInt {
         try {
             return rowCommandsPool.get(element);
         } catch (IndexOutOfBoundsException e) {
+            logger.info(e.getMessage());
             return null;
         }
     }

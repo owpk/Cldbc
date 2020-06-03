@@ -2,7 +2,6 @@ package core;
 
 import commandListeners.CommandListener;
 import commandListeners.MainClientListener;
-import commands.CommandSet;
 
 import java.util.Scanner;
 
@@ -16,7 +15,8 @@ public class Client {
         if (client == null) {
             MainClientListener mainClientListener = new MainClientListener();
             client = new Client(mainClientListener);
-            client.setMain(mainClientListener);
+            mainClientListener.setScanner(client.sc);
+            client.mainListener = mainClientListener;
             return client;
         }
         return client;
@@ -31,29 +31,18 @@ public class Client {
         return sc;
     }
 
-    void listen(CommandListener c, String command) {
-        c.listenCommands(command);
-    }
-
     public void init() {
-        while (true) {
-            System.out.print("cldbc> ");
+        while (!commandListener.isOver()) {
+            System.out.print(client.commandListener.getName() + "> ");
             String command = sc.nextLine();
             command = command.toLowerCase().trim();
-            if (!command.isEmpty()) {
-                listen(Client.getClient().getCommandListener(), command);
-                if (command.equals(CommandSet.EXIT.getCommandText()))
-                    break;
-            }
+            if (!command.isEmpty())
+                client.commandListener.listenCommands(command);
         }
     }
 
     public void close() {
         sc.close();
-    }
-
-    public void setMain(CommandListener commandListener) {
-        this.mainListener = commandListener;
     }
 
     public CommandListener getMainListener() {
