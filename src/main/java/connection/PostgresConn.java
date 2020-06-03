@@ -12,10 +12,6 @@ public class PostgresConn extends DBConnection {
         urlPrefix = "jdbc:postgresql://";
     }
 
-    @Override
-    protected String createURL() {
-        return urlPrefix + host + ":" + port + "/" + urlParams;
-    }
 
     @Override
     public Connection createConn() throws ClassNotFoundException, SQLException {

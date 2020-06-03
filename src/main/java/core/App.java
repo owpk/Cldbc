@@ -2,12 +2,13 @@ package core;
 
 import util.ConfigReader;
 
+import java.util.Scanner;
+
 public class App {
-    //TODO refactor scanner (no constructor exchange)
     public static void main(String[] args) {
         ConfigReader.init();
-        new ClientManager().commandListener();
+        Client client = Client.getClient();
+        client.init();
+        client.close();
     }
 }
-
-

@@ -4,6 +4,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ConfigParams {
+    /**
+     * the class is designed to store database connection parameters;
+     * The "makeParams" method returns a string from the paramList;
+     * Connection to the database uses a URL format:
+     * "jdbc:dataBaseVendorName://hostName:portAddress/dataBaseName?parameters"
+     */
 
     private String alias;
     private String vendor;
@@ -14,7 +20,6 @@ public class ConfigParams {
     private String port;
     private String params;
     private List<String> paramList;
-
 
     public String showParams() {
         return "Database vendor: " + getVendor() + "\nConnection properties: " + host + ":" + port + "\nDatabase name: " + dbName +
@@ -96,4 +101,5 @@ public class ConfigParams {
     public void setVendor(String vendor) {
         this.vendor = vendor;
     }
+
 }

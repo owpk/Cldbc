@@ -11,41 +11,42 @@ import java.util.List;
 import java.util.Map;
 
 public class ConnectionManager {
-    private DBConnection conn;
-    private List<ConfigParams> configParams;
-    private Map<String, DBConnection> connectionList;
+    private final List<ConfigParams> configParams;
+    private final Map<String, DBConnection> connectionList;
     private static ConnectionManager connectionManager;
-    static {
-        connectionManager = new ConnectionManager();
-    }
 
     public Map<String, DBConnection> getConnectionList() {
         return connectionList;
     }
 
-    private void createCon(DBConnection c, ConfigParams cfg) {
-        conn = c;
-        connectionList.put(cfg.getAlias(), conn);
+    private void createCon(String alias, DBConnection c) {
+        connectionList.put(alias, c);
     }
 
     public static ConnectionManager getManager() {
+        if (connectionManager == null) {
+            connectionManager = new ConnectionManager();
+            connectionManager.fillConnectionList();
+        }
         return connectionManager;
     }
 
+    private void fillConnectionList(){
+        for (ConfigParams cfg : configParams) {
+            switch (cfg.getVendor()) {
+                case "mysql" :
+                    createCon(cfg.getAlias(), new MySqlConn(cfg));
+                    break;
+                case "postgres" :
+                    createCon(cfg.getAlias(), new PostgresConn(cfg));
+                    break;
+            }
+        }
+    }
 
     private ConnectionManager() {
         connectionList = new HashMap<>();
         configParams = ConfigReader.getConfigList();
-        for (ConfigParams cfg : configParams) {
-            switch (cfg.getVendor()) {
-                case "mysql" :
-                    createCon(new MySqlConn(cfg), cfg);
-                    break;
-                case "postgres" :
-                    createCon(new PostgresConn(cfg), cfg);
-                    break;
-            }
-        }
     }
 
 

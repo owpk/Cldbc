@@ -1,18 +1,20 @@
 package commands;
 
 import core.Commands;
+import core.ConnectionManager;
 
-public class ConfigCmd extends Commands implements Command {
+public class ConfigCmd extends Commands implements CommandInt {
     private String alias;
+    {
+        cmd = CommandSet.CONFIG;
+    }
 
     public ConfigCmd(String command) {
         super(command);
-        cmd = CommandSet.CONFIG;
         alias = obtain(0);
     }
 
     public ConfigCmd(String command, String alias) {
-        cmd = CommandSet.CONFIG;
         this.alias = alias;
     }
 
@@ -25,7 +27,7 @@ public class ConfigCmd extends Commands implements Command {
     @Override
     public void execute() throws NullPointerException {
         System.out.println(
-                CONNECTION_MANAGER
+                ConnectionManager.getManager()
                         .getConnectionList()
                         .get(alias)
                         .getCfg()
