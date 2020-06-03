@@ -1,5 +1,6 @@
 package commands;
 
+import connection.DBConnection;
 import core.Commands;
 import core.ConnectionManager;
 import util.ConfigParams;
@@ -34,7 +35,8 @@ public class SetTableCmd extends Commands implements CommandInt {
     @Override
     public void execute() throws NullPointerException {
         if (notEmpty()) {
-            ConnectionManager.getManager().getConnectionList().get(alias).getCfg().setDbName(dBName);
+            DBConnection dbConnection = ConnectionManager.getManager().getConnectionList().get(alias);
+            dbConnection.getCfg().setDbName(dBName);
             System.out.println("DB name changed: " + dbConnection.getCfg().getDbName());
         }
     }
