@@ -1,7 +1,9 @@
-package core;
+package commandListeners;
 
 import commandListeners.CommandListener;
 import commands.*;
+import core.Client;
+import core.Commands;
 
 import java.util.Scanner;
 

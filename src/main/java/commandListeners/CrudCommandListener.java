@@ -3,7 +3,6 @@ package commandListeners;
 import commands.CommandSet;
 import commands.SetTableCmd;
 import connection.DBConnection;
-import core.AbsCommandListener;
 import core.Client;
 import core.Commands;
 
