@@ -1,5 +1,6 @@
 package commands;
 
+import commandListeners.MainClientListener;
 import core.Commands;
 import core.ConnectionManager;
 
@@ -8,7 +9,7 @@ public class AliasParamCmd extends Commands implements CommandInt {
 
     public AliasParamCmd(String command) {
         super(command);
-        cmd = CommandSet.ALIAS_PARAM;
+        cmd = MainClientListener.CommandSet.ALIAS_PARAM;
         alias = obtain(0);
     }
 

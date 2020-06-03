@@ -1,5 +1,6 @@
 package commands;
 
+import commandListeners.MainClientListener;
 import core.Client;
 import core.Commands;
 import core.ConnectionManager;
@@ -10,7 +11,7 @@ public class ConnectionCmd extends Commands implements CommandInt {
 
     public ConnectionCmd(String command) {
         super(command);
-        cmd = CommandSet.CONNECT;
+        cmd = MainClientListener.CommandSet.CONNECT;
         alias = obtain(0);
     }
 

@@ -2,10 +2,10 @@ package commandListeners;
 
 import commands.AliasParamCmd;
 import commands.CommandInt;
-import commands.CommandSet;
 import core.Commands;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import sun.applet.Main;
 
 import java.util.Scanner;
 
@@ -21,16 +21,16 @@ public abstract class BaseListener implements CommandListener {
 
     @Override
     public boolean listenCommands(String command) {
-        if (command.startsWith(CommandSet.ALIAS_PARAM.getCommandText())) {
+        if (command.startsWith(MainClientListener.CommandSet.ALIAS_PARAM.getCommandText())) {
             commandService(new AliasParamCmd(command));
             return true;
-        } else if (command.equals(CommandSet.ALIAS.getCommandText())) {
+        } else if (command.equals(MainClientListener.CommandSet.ALIAS.getCommandText())) {
             Commands.showAvailableAliasList();
             return true;
-        } else if (command.equals(CommandSet.HELP.getCommandText()) || command.equals("?")) {
+        } else if (command.equals(MainClientListener.CommandSet.HELP.getCommandText()) || command.equals("?")) {
             Commands.printHelp();
             return true;
-        } else if (command.equals(CommandSet.EXIT.getCommandText())) {
+        } else if (command.equals(MainClientListener.CommandSet.EXIT.getCommandText())) {
             over = true;
             close();
             return true;
@@ -40,8 +40,8 @@ public abstract class BaseListener implements CommandListener {
 
     protected void printUnknownCommandStack() {
         System.out.println("Unknown command");
-        System.out.println("If you want to init connection: " + CommandSet.CONNECT.getCommandText() +
-                CommandSet.CONNECT.getCommandDescription());
+        System.out.println("If you want to init connection: " + MainClientListener.CommandSet.CONNECT.getCommandText() +
+                MainClientListener.CommandSet.CONNECT.getCommandDescription());
         Commands.printHelp();
     }
     protected void commandService(CommandInt c) {

@@ -1,5 +1,6 @@
 package commands;
 
+import commandListeners.MainClientListener;
 import connection.DBConnection;
 import core.Commands;
 import core.ConnectionManager;
@@ -19,7 +20,7 @@ public class SetTableCmd extends Commands implements CommandInt {
         super(command);
         alias = obtain(0);
         dBName = obtain(1);
-        cmd = CommandSet.SET_TABLE;
+        cmd = MainClientListener.CommandSet.SET_TABLE;
     }
 
     public SetTableCmd(String command, String alias) {

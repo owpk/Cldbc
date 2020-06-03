@@ -1,7 +1,7 @@
 package core;
 
+import commandListeners.MainClientListener;
 import commands.CommandInt;
-import commands.CommandSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,7 +15,7 @@ public abstract class Commands implements CommandInt {
     protected List<String> rowKeyList;
     protected Map<String, String> paramsPool;
     protected Map<String, String> keyPool;
-    protected CommandSet cmd;
+    protected MainClientListener.CommandSet cmd;
 
     protected Connection connection;
 
@@ -48,7 +48,7 @@ public abstract class Commands implements CommandInt {
     }
 
     public static void printHelp() {
-        CommandSet[] commands = CommandSet.values();
+        MainClientListener.CommandSet[] commands = MainClientListener.CommandSet.values();
         System.out.println("Available commands: ");
         Arrays.stream(commands).forEach(x -> System.out.println(x.getCommandText() + x.getCommandDescription()));
     }

@@ -1,12 +1,13 @@
 package commands;
 
+import commandListeners.MainClientListener;
 import core.Commands;
 import core.ConnectionManager;
 
 public class ConfigCmd extends Commands implements CommandInt {
     private String alias;
     {
-        cmd = CommandSet.CONFIG;
+        cmd = MainClientListener.CommandSet.CONFIG;
     }
 
     public ConfigCmd(String command) {
