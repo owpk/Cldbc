@@ -3,6 +3,7 @@ import commands.SetTableCmd;
 import connection.DBConnection;
 import connection.MySqlConn;
 import core.ConnectionManager;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class SetDataBaseNameTest {
-    private ConfigParams cfg = createTestConfig();
+    private ConfigParams cfg;
     private CommandInt setTableCmd;
     private ConnectionManager connectionManager;
     private Field connectionList;
@@ -22,6 +23,7 @@ public class SetDataBaseNameTest {
 
     @Before
     public void init() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
+        cfg = createTestConfig();
         Constructor<?> constructor = ConnectionManager.class.getDeclaredConstructor();
         constructor.setAccessible(true);
         connectionManager = (ConnectionManager) constructor.newInstance();
@@ -30,12 +32,12 @@ public class SetDataBaseNameTest {
         singleTonInConnectionManager = ConnectionManager.class.getDeclaredField("connectionManager");
         connectionList.setAccessible(true);
         singleTonInConnectionManager.setAccessible(true);
-
     }
 
     @Test
     public void shouldChangeDataBaseName() throws IllegalAccessException {
         cfg.setDbName("Change this name please!!!");
+
         DBConnection dbConnection = new MySqlConn(cfg);
 
         Map<String, DBConnection> connectionMap = new HashMap<>();
@@ -50,6 +52,10 @@ public class SetDataBaseNameTest {
         Assert.assertEquals("sakila", connectionManager.getConnectionList().get("testAlias").getCfg().getDbName());
     }
 
+    @After
+    public void destroy() {
+        connectionList = null;
+    }
 
     private static ConfigParams createTestConfig() {
         ConfigParams cfg = new ConfigParams();

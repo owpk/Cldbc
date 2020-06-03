@@ -6,7 +6,7 @@ public class Client {
 
     public static void main(String[] args) {
         ConfigReader.init();
-        new ClientManager().commandListener();
+        new MainClientListener().commandListener();
     }
 }
 

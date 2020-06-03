@@ -22,7 +22,7 @@ public abstract class Commands implements CommandInt {
     protected Connection connection;
 
     public Commands(String rowCommand) {
-        this.sc = ClientManager.getScanner();
+        this.sc = MainClientListener.getScanner();
         rowCommandsPool = new ArrayList<>(Arrays.asList(rowCommand.split(" ")));
         rowKeyList = new ArrayList<>();
         rowCommandsPool = rowCommandsPool.stream()

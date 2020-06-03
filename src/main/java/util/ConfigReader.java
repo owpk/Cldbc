@@ -1,7 +1,6 @@
 package util;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -20,7 +19,6 @@ public class ConfigReader {
     private static DocumentBuilder documentBuilder;
     private static Document document;
     private static List<ConfigParams> configList;
-    private static int count;
 
     public static List<ConfigParams> getConfigList() {
         return configList;
@@ -51,7 +49,6 @@ public class ConfigReader {
     private static void parseConfig(NodeList propList, String vendor) {
         ConfigParams config = new ConfigParams();
         config.setVendor(vendor);
-        count = 0;
         for (int h = 0; h < propList.getLength(); h++) {
             Node dbName = propList.item(h);
             NodeList dbNameList = dbName.getChildNodes();

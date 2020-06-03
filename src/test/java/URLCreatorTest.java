@@ -10,7 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-public class TestURLCreator {
+public class URLCreatorTest {
     private ConfigParams cfg;
     private DBConnection dbConnection;
 
@@ -51,11 +51,7 @@ public class TestURLCreator {
         String value = (String) field.get(dbConnection);
         Method m = DBConnection.class.getDeclaredMethod("createURL");
         m.setAccessible(true);
-        Method executeConfig = DBConnection.class.getDeclaredMethod("executeCfg");
-        executeConfig.setAccessible(true);
         cfg.setParams("?params");
-        dbConnection.setCfg(cfg);
-        executeConfig.invoke(dbConnection);
         System.out.println(dbConnection.getCfg().showParams());
         Assert.assertEquals(value + "1:1/1?params", m.invoke(dbConnection));
     }

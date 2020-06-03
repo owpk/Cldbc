@@ -13,7 +13,6 @@ public class SetTableCmd extends Commands implements CommandInt {
 
     private String alias;
     private String dBName;
-    private ConfigParams cfg;
 
     public SetTableCmd(String command) {
         super(command);
@@ -35,10 +34,7 @@ public class SetTableCmd extends Commands implements CommandInt {
     @Override
     public void execute() throws NullPointerException {
         if (notEmpty()) {
-            dbConnection = ConnectionManager.getManager().getConnectionList().get(alias);
-            cfg = dbConnection.getCfg();
-            cfg.setDbName(dBName);
-            dbConnection.setCfg(cfg);
+            ConnectionManager.getManager().getConnectionList().get(alias).getCfg().setDbName(dBName);
             System.out.println("DB name changed: " + dbConnection.getCfg().getDbName());
         }
     }

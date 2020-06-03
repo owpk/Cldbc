@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ConnectionManager {
-    private DBConnection conn;
+    //private DBConnection conn;
     private List<ConfigParams> configParams;
     private Map<String, DBConnection> connectionList;
     private static ConnectionManager connectionManager;
@@ -20,9 +20,8 @@ public class ConnectionManager {
         return connectionList;
     }
 
-    private void createCon(DBConnection c, ConfigParams cfg) {
-        conn = c;
-        connectionList.put(cfg.getAlias(), conn);
+    private void createCon(String alias, DBConnection c) {
+        connectionList.put(alias, c);
     }
 
     public static ConnectionManager getManager() {
@@ -33,14 +32,14 @@ public class ConnectionManager {
         return connectionManager;
     }
 
-    public void fillConnectionList(){
+    private void fillConnectionList(){
         for (ConfigParams cfg : configParams) {
             switch (cfg.getVendor()) {
                 case "mysql" :
-                    createCon(new MySqlConn(cfg), cfg);
+                    createCon(cfg.getAlias(), new MySqlConn(cfg));
                     break;
                 case "postgres" :
-                    createCon(new PostgresConn(cfg), cfg);
+                    createCon(cfg.getAlias(), new PostgresConn(cfg));
                     break;
             }
         }
