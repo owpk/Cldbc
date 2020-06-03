@@ -3,11 +3,7 @@ package commands;
 import core.Client;
 import core.Commands;
 import core.ConnectionManager;
-import core.CrudCommandListener;
-import sun.misc.Cleaner;
-
-import java.sql.SQLException;
-import java.sql.Statement;
+import commandListeners.CrudCommandListener;
 
 public class ConnectionCmd extends Commands implements CommandInt {
     private String alias;
@@ -26,8 +22,8 @@ public class ConnectionCmd extends Commands implements CommandInt {
 
     @Override
     public void execute() {
-        Client.setCommandListener(
-        new CrudCommandListener(ConnectionManager.getManager().getConnectionList().get(alias))
+        Client.getClient().setCommandListener(
+                new CrudCommandListener(ConnectionManager.getManager().getConnectionList().get(alias))
         );
     }
 

@@ -11,9 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ConnectionManager {
-    //private DBConnection conn;
-    private List<ConfigParams> configParams;
-    private Map<String, DBConnection> connectionList;
+    private final List<ConfigParams> configParams;
+    private final Map<String, DBConnection> connectionList;
     private static ConnectionManager connectionManager;
 
     public Map<String, DBConnection> getConnectionList() {

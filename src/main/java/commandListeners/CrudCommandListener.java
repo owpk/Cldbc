@@ -1,8 +1,11 @@
-package core;
+package commandListeners;
 
 import commands.CommandSet;
 import commands.SetTableCmd;
 import connection.DBConnection;
+import core.AbsCommandListener;
+import core.Client;
+import core.Commands;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -18,34 +21,42 @@ public class CrudCommandListener extends AbsCommandListener {
     public CrudCommandListener(DBConnection dbConnection) {
         this.dbConnection = dbConnection;
         alias = dbConnection.getCfg().getAlias();
+        createConnection();
+    }
+
+    private void createConnection() {
+        try {
+            this.connection = dbConnection.createConn();
+            System.out.println("DB Connected, alias: " + dbConnection.getCfg().getAlias());
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public void listenCommands(String command) {
-        sc.reset();
-        createConnection();
-        System.out.println("DB Connected, alias: " + dbConnection.getCfg().getAlias());
-        while (true) {
-            String query = sc.nextLine();
+    public boolean listenCommands(String query) {
             if (!query.isEmpty()) {
-            super.listenCommands(query);
-                query = query.toLowerCase().trim();
-                if (query.equals(CommandSet.BACK.getCommandText())) {
-                    System.out.println("Connection closed");
-                    break;
-                } else if (query.startsWith("insert") ||
-                                query.startsWith("delete") ||
-                                query.startsWith("create"))
-                    updCommand(query);
-                else if (query.startsWith("select"))
-                    select(query);
-                else if (query.startsWith(CommandSet.SET_TABLE.getCommandText())) {
-                    commandService(new SetTableCmd(query, alias));
-                    createConnection();
-                } else System.out.println("Unknown command");
+                if (!super.listenCommands(query)) {
+                    query = query.toLowerCase().trim();
+                    if (query.equals(CommandSet.BACK.getCommandText())) {
+                        System.out.println("Connection closed");
+                        Client.getClient().setCommandListener(Client.getClient().getMainListener());
+                    } else if (query.startsWith("insert") ||
+                            query.startsWith("delete") ||
+                            query.startsWith("create"))
+                        updCommand(query);
+                    else if (query.startsWith("select"))
+                        select(query);
+                    else if (query.startsWith(CommandSet.SET_TABLE.getCommandText())) {
+                        commandService(new SetTableCmd(query, alias));
+                        createConnection();
+                    } else {
+                        System.out.println("Unknown command");
+                        Commands.printHelp();
+                    }
+                }
             }
-        }
-        close();
+        return false;
     }
 
     private void updCommand(String query) {
@@ -147,17 +158,8 @@ public class CrudCommandListener extends AbsCommandListener {
         }
     }
 
-    private void createConnection() {
-        try {
-            this.connection = dbConnection.createConn();
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
-    @Override
     public void close() {
-        super.close();
         try {
             connection.close();
         } catch (SQLException s) {
