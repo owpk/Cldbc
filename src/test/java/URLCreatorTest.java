@@ -1,5 +1,6 @@
 import connection.DBConnection;
 import connection.MySqlConn;
+import connection.PostgresConn;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.Before;
@@ -13,6 +14,8 @@ import java.util.Arrays;
 public class URLCreatorTest {
     private ConfigParams cfg;
     private DBConnection dbConnection;
+    private Field urlPrefix;
+    private Method createUrl;
 
     private static ConfigParams createTestConfig() {
         ConfigParams cfg = new ConfigParams();
@@ -46,14 +49,25 @@ public class URLCreatorTest {
     @Test
     public void shouldReturnMySQLURLFormat() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
         dbConnection = new MySqlConn(cfg);
-        Field field = DBConnection.class.getDeclaredField("urlPrefix");
-        field.setAccessible(true);
-        String value = (String) field.get(dbConnection);
-        Method m = DBConnection.class.getDeclaredMethod("createURL");
-        m.setAccessible(true);
+        urlPrefix = DBConnection.class.getDeclaredField("urlPrefix");
+        urlPrefix.setAccessible(true);
+        String value = (String) urlPrefix.get(dbConnection);
+        createUrl = DBConnection.class.getDeclaredMethod("createURL");
+        createUrl.setAccessible(true);
         cfg.setParams("?params");
-        System.out.println(dbConnection.getCfg().showParams());
-        Assert.assertEquals(value + "1:1/1?params", m.invoke(dbConnection));
+        Assert.assertEquals(value + "1:1/1?params", createUrl.invoke(dbConnection));
+    }
+
+    @Test
+    public void shouldReturnPostgresURLFormat() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+        dbConnection = new PostgresConn(cfg);
+        urlPrefix = DBConnection.class.getDeclaredField("urlPrefix");
+        urlPrefix.setAccessible(true);
+        String value = (String) urlPrefix.get(dbConnection);
+        createUrl = DBConnection.class.getDeclaredMethod("createURL");
+        createUrl.setAccessible(true);
+        cfg.setParams("?params");
+        Assert.assertEquals(value + "1:1/1?params", createUrl.invoke(dbConnection));
     }
 
 }

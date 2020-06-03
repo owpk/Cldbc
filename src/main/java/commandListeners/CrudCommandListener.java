@@ -48,7 +48,6 @@ public class CrudCommandListener extends BaseListener {
         }
     }
 
-
     private void createConnection() {
         try {
             this.connection = dbConnection.createConn();

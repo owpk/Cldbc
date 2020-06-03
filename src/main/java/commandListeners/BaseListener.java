@@ -5,7 +5,6 @@ import commands.CommandInt;
 import core.Commands;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sun.applet.Main;
 
 import java.util.Scanner;
 

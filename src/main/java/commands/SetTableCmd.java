@@ -9,8 +9,8 @@ import util.ConfigParams;
 public class SetTableCmd extends Commands implements CommandInt {
     /**
      * change table name
-     * from main menu str 'alias_name' 'dbName'
-     * from CRUD menu str 'dbName'
+     * from main menu set 'alias_name' 'dbName'
+     * from CRUD menu set 'dbName'
      */
 
     private String alias;
