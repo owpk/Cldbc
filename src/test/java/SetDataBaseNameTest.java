@@ -19,7 +19,7 @@ public class SetDataBaseNameTest {
     private CommandInt setTableCmd;
     private ConnectionManager connectionManager;
     private Field connectionList;
-    private Field singleTonInConnectionManager;
+    private Field singletonInConnectionManager;
 
     @Before
     public void init() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
@@ -29,9 +29,9 @@ public class SetDataBaseNameTest {
         connectionManager = (ConnectionManager) constructor.newInstance();
 
         connectionList = ConnectionManager.class.getDeclaredField("connectionList");
-        singleTonInConnectionManager = ConnectionManager.class.getDeclaredField("connectionManager");
+        singletonInConnectionManager = ConnectionManager.class.getDeclaredField("connectionManager");
         connectionList.setAccessible(true);
-        singleTonInConnectionManager.setAccessible(true);
+        singletonInConnectionManager.setAccessible(true);
     }
 
     @Test
@@ -44,7 +44,7 @@ public class SetDataBaseNameTest {
         connectionMap.put("testAlias", dbConnection);
         connectionList.set(connectionManager, connectionMap);
 
-        singleTonInConnectionManager.set(connectionManager, connectionManager);
+        singletonInConnectionManager.set(connectionManager, connectionManager);
 
         setTableCmd = new SetTableCmd("use sakila", "testAlias");
         System.out.println("DB name before: " + connectionManager.getConnectionList().get("testAlias").getCfg().getDbName());

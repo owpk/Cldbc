@@ -1,10 +1,11 @@
 package commandListeners;
 
-import commands.CommandSet;
+import commands.ConnectionCmd;
 import commands.SetTableCmd;
 import connection.DBConnection;
 import core.Client;
-import core.Commands;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -12,50 +13,93 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
-public class CrudCommandListener extends AbsCommandListener {
+public class CrudCommandListener extends BaseListener {
+    private static final Logger logger = LogManager.getLogger(CrudCommandListener.class.getName());
     private final DBConnection dbConnection;
     private Connection connection;
     private final String alias;
+    private ArrayList<String>[] res;
+    private int columns;
+    private int colInd;
 
     public CrudCommandListener(DBConnection dbConnection) {
         this.dbConnection = dbConnection;
         alias = dbConnection.getCfg().getAlias();
-        createConnection();
+        listenerName = alias;
     }
 
-    private void createConnection() {
-        try {
+    public static Logger getLogger() {
+        return logger;
+    }
+
+    public enum CommandSet {
+        SELECT("select", ""),
+        INSERT("insert", ""),
+        CREATE("create", ""),
+        DELETE("delete", ""),
+        SHOW("show", "usage: show 'row_index'; show 'start_index'-'end_index'");
+        private final String commandText;
+        private final String commandDescription;
+
+        CommandSet(String commandText, String commandDescription) {
+            this.commandDescription = commandDescription;
+            this.commandText = commandText;
+        }
+
+        public String getCommandText() {
+            return commandText;
+        }
+
+        public String getCommandDescription() {
+            return commandDescription;
+        }
+    }
+
+    public void createConnection() throws SQLException, ClassNotFoundException {
             this.connection = dbConnection.createConn();
             System.out.println("DB Connected, alias: " + dbConnection.getCfg().getAlias());
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
     public boolean listenCommands(String query) {
-            if (!query.isEmpty()) {
-                if (!super.listenCommands(query)) {
-                    query = query.toLowerCase().trim();
-                    if (query.equals(CommandSet.BACK.getCommandText())) {
-                        System.out.println("Connection closed");
-                        Client.getClient().setCommandListener(Client.getClient().getMainListener());
-                    } else if (query.startsWith("insert") ||
-                            query.startsWith("delete") ||
-                            query.startsWith("create"))
-                        updCommand(query);
-                    else if (query.startsWith("select"))
-                        select(query);
-                    else if (query.startsWith(CommandSet.SET_TABLE.getCommandText())) {
-                        commandService(new SetTableCmd(query, alias));
-                        createConnection();
-                    } else {
-                        System.out.println("Unknown command");
-                        Commands.printHelp();
-                    }
-                }
+        if (!super.listenCommands(query)) {
+            query = query.toLowerCase().trim();
+            if (query.equals(MainClientListener.CommandSet.CLOSE.getCommandText())) {
+                System.out.println("Connection closed");
+                close();
+                Client.getClient().setCommandListener(Client.getClient().getMainListener());
+            } else if (query.startsWith(CommandSet.INSERT.commandText) ||
+                    query.startsWith(CommandSet.DELETE.commandText) ||
+                    query.startsWith(CommandSet.CREATE.commandText))
+                updCommand(query);
+            else if (query.startsWith(CommandSet.SELECT.commandText)) {
+                if (select(query))
+                    drawTable(res);
+            } else if (query.equals(MainClientListener.CommandSet.CONFIG.getCommandText()))
+                showConnectionConfig();
+            else if (query.startsWith(MainClientListener.CommandSet.SET_TABLE.getCommandText())) {
+                commandService(new SetTableCmd(query, alias));
+                commandService(new ConnectionCmd(query, alias));
+            } else if (query.startsWith(CommandSet.SHOW.commandText)) {
+                parse(query);
+            } else {
+                printUnknownCommandStack();
             }
+        }
         return false;
+    }
+
+    private void parse(String s) {
+        String data = s.substring(CommandSet.SHOW.commandText.length()).trim();
+        if (data.matches("\\d+\\s*-\\s*\\d+")) {
+            drawTable(selectRow(Integer.parseInt(data.substring(0, data.indexOf("-")).trim()),
+                    Integer.parseInt(data.substring(data.indexOf("-") + 1).trim())));
+        } else if (data.matches("\\d")) {
+            drawTable(selectRow(Integer.parseInt(data)));
+        } else {
+            System.out.println("wrong format");
+            System.out.println(CommandSet.SELECT.commandText + CommandSet.SELECT.commandDescription);
+        }
     }
 
     private void updCommand(String query) {
@@ -73,23 +117,24 @@ public class CrudCommandListener extends AbsCommandListener {
         System.out.println("====================");
     }
 
-
-    private void select(String query) {
-        drawTable(query);
-    }
-
-    protected void drawTable(String query) {
+    private boolean select(String query) {
+        boolean flag = true;
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
-            int columns = rs.getMetaData().getColumnCount();
-            ArrayList<String>[] res = new ArrayList[columns];
+
+            columns = rs.getMetaData().getColumnCount();
+
+            if (columns == 0)
+                return false;
+
+            res = new ArrayList[columns];
+
+            //fill res with empty columns
             for (int i = 0; i < res.length; i++) {
                 res[i] = new ArrayList<>();
             }
 
-            int colInd;
-            boolean flag = true;
-
+            //fill empty columns with data
             while (rs.next()) {
                 for (int i = 1; i <= columns; i++) {
                     if (flag)
@@ -99,15 +144,15 @@ public class CrudCommandListener extends AbsCommandListener {
                 flag = false;
             }
 
+            //create spaces
             for (ArrayList<String> re : res) {
                 OptionalInt opt = re.stream().filter(Objects::nonNull).mapToInt(String::length).max();
                 int length = opt.isPresent() ? opt.getAsInt() : "null".length();
                 for (int i = 0; i < re.size(); i++) {
                     StringBuilder space = new StringBuilder("  ");
                     if (re.get(i) != null) {
-                        for (int k = 0; k < length - re.get(i).length(); k++) {
+                        for (int k = 0; k < length - re.get(i).length(); k++)
                             space.append(" ");
-                        }
                         re.set(i, re.get(i) + space);
                     } else {
                         for (int j = 0; j < length - "null".length(); j++)
@@ -116,48 +161,92 @@ public class CrudCommandListener extends AbsCommandListener {
                     }
                 }
             }
-
-            colInd = 0;
-            boolean canWrite;
-            String[] lines = new String[columns];
-
-            for (ArrayList<String> strings : res) {
-                StringBuilder line = new StringBuilder("+");
-                for (int j = 0; j < strings.get(0).length(); j++)
-                    line.append("-");
-                lines[colInd] = line.toString();
-                if (colInd == lines.length - 1)
-                    lines[colInd] = lines[colInd].concat("+");
-                colInd++;
-            }
-
-            colInd = 0;
-            int row = 0;
-
-            for (int i = 0; i < res[colInd].size(); i++) {
-                if (colInd++ == columns - 1)
-                    colInd = 0;
-                canWrite = row == 1 || row == 0;
-                row++;
-                if (canWrite) {
-                    Arrays.stream(lines).forEach(System.out::print);
-                    System.out.println("");
-                }
-                for (ArrayList<String> re : res)
-                    System.out.print("|" + re.get(i));
-
-                System.out.println("|");
-            }
-            Arrays.stream(lines).forEach(System.out::print);
-            System.out.println("");
-            System.out.println("DB rows: " + (row - 1));
-            System.out.println("DB columns: " + res.length);
-        } catch (SQLException s) {
-            System.out.println(s.getMessage());
+            return true;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
         }
     }
 
+    private ArrayList<String>[] selectRow(int index) {
+        ArrayList<String>[] tempArr = new ArrayList[columns];
+        for (int i = 0; i < columns; i++) {
+            tempArr[i] = new ArrayList<>();
+            tempArr[i].add(res[i].get(0));
+            tempArr[i].add(res[i].get(index));
+        }
+        return tempArr;
+    }
 
+    private ArrayList<String>[] selectRow(int start, int end) {
+        colInd = 0;
+        ArrayList<String>[] tempArr = new ArrayList[columns];
+
+        if (start - end <= 0)
+            return tempArr;
+
+        boolean flag = true;
+        int index = 0;
+        for (int i = 0; i < columns * (end + 1 - start); i++) {
+            if (colInd++ == columns - 1) {
+                index++;
+                colInd = 0;
+            }
+            if (i < columns) {
+                flag = true;
+                tempArr[colInd] = new ArrayList<>();
+            }
+            if (flag)
+                tempArr[colInd].add(res[colInd].get(0));
+            tempArr[colInd].add(res[colInd].get(index + start));
+            flag = false;
+
+        }
+        return tempArr;
+    }
+
+
+    private void drawTable(ArrayList<String>[] arrayOfLists) {
+        colInd = 0;
+        String[] lines = new String[columns];
+
+        //create horizontal lines
+        for (ArrayList<String> strings : arrayOfLists) {
+            StringBuilder line = new StringBuilder("+");
+            for (int j = 0; j < strings.get(0).length(); j++)
+                line.append("-");
+            lines[colInd] = line.toString();
+            if (colInd == lines.length - 1)
+                lines[colInd] = lines[colInd].concat("+");
+            colInd++;
+        }
+        colInd = 0;
+        int row = 0;
+        boolean canWrite;
+
+        //print data
+        for (int i = 0; i < arrayOfLists[colInd].size(); i++) {
+            if (colInd++ == columns - 1)
+                colInd = 0;
+            canWrite = row == 1 || row == 0;
+            row++;
+            if (canWrite) {
+                Arrays.stream(lines).forEach(System.out::print);
+                System.out.println("");
+            }
+            for (ArrayList<String> re : arrayOfLists)
+                System.out.print("|" + re.get(i));
+            System.out.println("|");
+        }
+        Arrays.stream(lines).forEach(System.out::print);
+        System.out.println("");
+        System.out.println("DB rows: " + (row - 1));
+        System.out.println("DB columns: " + res.length);
+    }
+
+
+
+    @Override
     public void close() {
         try {
             connection.close();

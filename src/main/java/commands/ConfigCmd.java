@@ -1,12 +1,13 @@
 package commands;
 
-import core.Commands;
+import commandListeners.MainClientListener;
 import core.ConnectionManager;
 
-public class ConfigCmd extends Commands implements CommandInt {
+public class ConfigCmd extends BaseCommand {
     private String alias;
+
     {
-        cmd = CommandSet.CONFIG;
+        cmd = MainClientListener.CommandSet.CONFIG;
     }
 
     public ConfigCmd(String command) {
@@ -26,17 +27,17 @@ public class ConfigCmd extends Commands implements CommandInt {
 
     @Override
     public void execute() throws NullPointerException {
-        System.out.println(
-                ConnectionManager.getManager()
-                        .getConnectionList()
-                        .get(alias)
-                        .getCfg()
-                        .showParams());
+        if (notEmpty()) {
+            System.out.println(
+                    ConnectionManager.getManager()
+                            .getConnectionList()
+                            .get(alias)
+                            .getCfg()
+                            .showParams());
+        } else {
+            printThisCommandHelp();
+            showAvailableAliasList();
+        }
     }
 
-    @Override
-    public void handleException() {
-        printThisCommandHelp();
-        showAvailableAliasList();
-    }
 }

@@ -1,15 +1,14 @@
 package commands;
 
+import commandListeners.MainClientListener;
 import connection.DBConnection;
-import core.Commands;
 import core.ConnectionManager;
-import util.ConfigParams;
 
-public class SetTableCmd extends Commands implements CommandInt {
+public class SetTableCmd extends BaseCommand {
     /**
      * change table name
-     * from main menu str 'alias_name' 'dbName'
-     * from CRUD menu str 'dbName'
+     * from main menu set 'alias_name' 'dbName'
+     * from CRUD menu set 'dbName'
      */
 
     private String alias;
@@ -19,7 +18,7 @@ public class SetTableCmd extends Commands implements CommandInt {
         super(command);
         alias = obtain(0);
         dBName = obtain(1);
-        cmd = CommandSet.SET_TABLE;
+        cmd = MainClientListener.CommandSet.SET_TABLE;
     }
 
     public SetTableCmd(String command, String alias) {
@@ -38,11 +37,8 @@ public class SetTableCmd extends Commands implements CommandInt {
             DBConnection dbConnection = ConnectionManager.getManager().getConnectionList().get(alias);
             dbConnection.getCfg().setDbName(dBName);
             System.out.println("DB name changed: " + dbConnection.getCfg().getDbName());
+        } else {
+            printThisCommandHelp();
         }
-    }
-
-    @Override
-    public void handleException() {
-        printThisCommandHelp();
     }
 }

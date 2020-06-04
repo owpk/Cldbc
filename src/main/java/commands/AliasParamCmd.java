@@ -1,14 +1,14 @@
 package commands;
 
-import core.Commands;
+import commandListeners.MainClientListener;
 import core.ConnectionManager;
 
-public class AliasParamCmd extends Commands implements CommandInt {
+public class AliasParamCmd extends BaseCommand {
     private String alias;
 
     public AliasParamCmd(String command) {
         super(command);
-        cmd = CommandSet.ALIAS_PARAM;
+        cmd = MainClientListener.CommandSet.ALIAS_PARAM;
         alias = obtain(0);
     }
 
@@ -26,12 +26,10 @@ public class AliasParamCmd extends Commands implements CommandInt {
                             .get(alias)
                             .getCfg()
                             .showParams());
+        } else {
+            printThisCommandHelp();
+            showAvailableAliasList();
         }
     }
 
-    @Override
-    public void handleException() {
-        printThisCommandHelp();
-        showAvailableAliasList();
-    }
 }

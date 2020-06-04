@@ -1,17 +1,28 @@
 package commands;
 
+import commandListeners.MainClientListener;
 import core.Client;
-import core.Commands;
 import core.ConnectionManager;
 import commandListeners.CrudCommandListener;
 
-public class ConnectionCmd extends Commands implements CommandInt {
+import java.sql.Connection;
+import java.sql.SQLException;
+
+public class ConnectionCmd extends BaseCommand {
     private String alias;
+
+    {
+        cmd = MainClientListener.CommandSet.CONNECT;
+    }
 
     public ConnectionCmd(String command) {
         super(command);
-        cmd = CommandSet.CONNECT;
         alias = obtain(0);
+    }
+
+    public ConnectionCmd(String command, String alias) {
+        super(command);
+        this.alias = alias;
     }
 
     @Override
@@ -22,14 +33,17 @@ public class ConnectionCmd extends Commands implements CommandInt {
 
     @Override
     public void execute() {
-        Client.getClient().setCommandListener(
-                new CrudCommandListener(ConnectionManager.getManager().getConnectionList().get(alias))
-        );
-    }
-
-    @Override
-    public void handleException() {
-        printThisCommandHelp();
-        showAvailableAliasList();
+        if (notEmpty()) {
+            CrudCommandListener crudCommandListener = new CrudCommandListener(ConnectionManager.getManager().getConnectionList().get(alias));
+            try {
+                crudCommandListener.createConnection();
+                Client.getClient().setCommandListener(crudCommandListener);
+            } catch (ClassNotFoundException | SQLException e) {
+                System.out.println(e.getMessage());
+                CrudCommandListener.getLogger().info(e.getStackTrace());
+            }
+        } else {
+            printThisCommandHelp();
+        }
     }
 }

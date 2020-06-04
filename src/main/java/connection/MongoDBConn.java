@@ -5,7 +5,7 @@ import util.ConfigParams;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class PostgresConn extends DBConnection {
+public class MongoDBConn extends DBConnection {
 
     /**DBC Driver class name: mongodb.jdbc.MongoDriver
      * URL format:jdbc:mongo://<\serverName>/<\databaseName>
@@ -13,16 +13,15 @@ public class PostgresConn extends DBConnection {
      * Con = DriverManager.getConnection(url, "dbuser", "dbuser");
      */
 
-    public PostgresConn(ConfigParams cfg) {
+    public MongoDBConn(ConfigParams cfg) {
         super(cfg);
-        urlPrefix = "jdbc:postgresql://";
+        urlPrefix = "jdbc:mongo://";
     }
 
     @Override
     public Connection createConn() throws ClassNotFoundException, SQLException {
-        Class.forName("org.postgresql.Driver");
+        Class.forName("mongodb.jdbc.MongoDriver");
         return super.createConn();
     }
 
 }
-
