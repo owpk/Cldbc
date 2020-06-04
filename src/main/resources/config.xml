@@ -60,7 +60,7 @@
             <Host>localhost</Host>
             <User>root</User>
             <Pass>178ueee34</Pass>
-            <DBName>sakila</DBName>
+            <DBName></DBName>
         </Conn>
     </MongoDb>
 </Config>

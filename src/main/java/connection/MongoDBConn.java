@@ -3,6 +3,7 @@ package connection;
 import util.ConfigParams;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class MongoDBConn extends DBConnection {
@@ -21,7 +22,7 @@ public class MongoDBConn extends DBConnection {
     @Override
     public Connection createConn() throws ClassNotFoundException, SQLException {
         Class.forName("mongodb.jdbc.MongoDriver");
-        return super.createConn();
+        return DriverManager.getConnection(createURL(), cfg.getUserName(), cfg.getUserName());
     }
 
 }
