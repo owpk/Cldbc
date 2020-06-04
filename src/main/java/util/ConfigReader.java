@@ -28,10 +28,7 @@ public class ConfigReader {
         try {
             configList = new ArrayList<>();
             documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            document = documentBuilder.parse(new File(
-                    Objects.requireNonNull(ConfigReader.class.getClassLoader()
-                            .getResource("config.xml")).getFile()
-            ));
+            document = documentBuilder.parse(new File("config/config.xml"));
             parseFormat();
         } catch (ParserConfigurationException | SAXException | IOException ex) {
             ex.printStackTrace(System.out);
