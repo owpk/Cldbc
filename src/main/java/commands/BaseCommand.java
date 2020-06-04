@@ -1,7 +1,7 @@
-package core;
+package commands;
 
 import commandListeners.MainClientListener;
-import commands.CommandInt;
+import core.ConnectionManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,6 +27,18 @@ public abstract class BaseCommand implements CommandInt {
         rowKeyList = new ArrayList<>();
         paramsPool = new HashMap<>();
         keyPool = new HashMap<>();
+        parseData();
+    }
+
+    public static void showAvailableAliasList() {
+        System.out.print("Available aliases: ");
+        ConnectionManager.getManager()
+                .getConnectionList()
+                .forEach((key, value) -> System.out.print(key + " | "));
+        System.out.println("");
+    }
+
+    protected void parseData() {
         rowCommandsPool = rowCommandsPool.stream()
                 .skip(1)
                 .filter(x -> x != null && !x.isEmpty())
@@ -41,13 +53,6 @@ public abstract class BaseCommand implements CommandInt {
                 .collect(Collectors.toList());
     }
 
-    public static void showAvailableAliasList() {
-        System.out.print("Available aliases: ");
-        ConnectionManager.getManager()
-                .getConnectionList()
-                .forEach((key, value) -> System.out.print(key + " | "));
-        System.out.println("");
-    }
 
     public static void printHelp() {
         MainClientListener.CommandSet[] commands = MainClientListener.CommandSet.values();

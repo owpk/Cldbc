@@ -1,9 +1,9 @@
-package core;
+package commandListeners;
 
-import commandListeners.CommandListener;
-import commandListeners.MainClientListener;
+import commands.BaseCommand;
 import commands.AliasParamCmd;
 import commands.CommandInt;
+import core.Client;
 
 import java.util.Scanner;
 

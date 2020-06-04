@@ -1,9 +1,11 @@
 package commandListeners;
 
+import commands.ConnectionCmd;
 import commands.SetTableCmd;
 import connection.DBConnection;
-import core.BaseListener;
 import core.Client;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -12,6 +14,7 @@ import java.sql.Statement;
 import java.util.*;
 
 public class CrudCommandListener extends BaseListener {
+    private static final Logger logger = LogManager.getLogger(CrudCommandListener.class.getName());
     private final DBConnection dbConnection;
     private Connection connection;
     private final String alias;
@@ -23,7 +26,10 @@ public class CrudCommandListener extends BaseListener {
         this.dbConnection = dbConnection;
         alias = dbConnection.getCfg().getAlias();
         listenerName = alias;
-        createConnection();
+    }
+
+    public static Logger getLogger() {
+        return logger;
     }
 
     public enum CommandSet {
@@ -49,13 +55,9 @@ public class CrudCommandListener extends BaseListener {
         }
     }
 
-    private void createConnection() {
-        try {
+    public void createConnection() throws SQLException, ClassNotFoundException {
             this.connection = dbConnection.createConn();
             System.out.println("DB Connected, alias: " + dbConnection.getCfg().getAlias());
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -71,13 +73,13 @@ public class CrudCommandListener extends BaseListener {
                     query.startsWith(CommandSet.CREATE.commandText))
                 updCommand(query);
             else if (query.startsWith(CommandSet.SELECT.commandText)) {
-                select(query);
-                drawTable(res);
+                if (select(query))
+                    drawTable(res);
             } else if (query.equals(MainClientListener.CommandSet.CONFIG.getCommandText()))
                 showConnectionConfig();
             else if (query.startsWith(MainClientListener.CommandSet.SET_TABLE.getCommandText())) {
                 commandService(new SetTableCmd(query, alias));
-                createConnection();
+                commandService(new ConnectionCmd(query, alias));
             } else if (query.startsWith(CommandSet.SHOW.commandText)) {
                 parse(query);
             } else {
@@ -115,11 +117,16 @@ public class CrudCommandListener extends BaseListener {
         System.out.println("====================");
     }
 
-    private void select(String query) {
+    private boolean select(String query) {
         boolean flag = true;
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
+
             columns = rs.getMetaData().getColumnCount();
+
+            if (columns == 0)
+                return false;
+
             res = new ArrayList[columns];
 
             //fill res with empty columns
@@ -136,6 +143,7 @@ public class CrudCommandListener extends BaseListener {
                 }
                 flag = false;
             }
+
             //create spaces
             for (ArrayList<String> re : res) {
                 OptionalInt opt = re.stream().filter(Objects::nonNull).mapToInt(String::length).max();
@@ -153,8 +161,10 @@ public class CrudCommandListener extends BaseListener {
                     }
                 }
             }
+            return true;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+            return false;
         }
     }
 
@@ -171,6 +181,10 @@ public class CrudCommandListener extends BaseListener {
     private ArrayList<String>[] selectRow(int start, int end) {
         colInd = 0;
         ArrayList<String>[] tempArr = new ArrayList[columns];
+
+        if (start - end <= 0)
+            return tempArr;
+
         boolean flag = true;
         int index = 0;
         for (int i = 0; i < columns * (end + 1 - start); i++) {
@@ -229,6 +243,8 @@ public class CrudCommandListener extends BaseListener {
         System.out.println("DB rows: " + (row - 1));
         System.out.println("DB columns: " + res.length);
     }
+
+
 
     @Override
     public void close() {

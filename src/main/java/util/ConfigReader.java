@@ -39,7 +39,8 @@ public class ConfigReader {
     }
 
     private static String getText(Node node) {
-        return node.getChildNodes().item(0).getTextContent().trim();
+        return node.getChildNodes().item(0) == null ?
+                "" : node.getChildNodes().item(0).getTextContent().trim();
     }
 
     private static String getBetterConf(String conf) {

@@ -2,7 +2,6 @@ package commands;
 
 import commandListeners.MainClientListener;
 import connection.DBConnection;
-import core.BaseCommand;
 import core.ConnectionManager;
 
 public class SetTableCmd extends BaseCommand {

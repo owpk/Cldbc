@@ -8,7 +8,6 @@ import java.sql.SQLException;
 
 public abstract class DBConnection {
     protected ConfigParams cfg;
-
     protected String urlPrefix;
 
     public DBConnection(ConfigParams cfg) {
@@ -16,9 +15,7 @@ public abstract class DBConnection {
     }
 
     protected String createURL() {
-        String url = urlPrefix + cfg.getHost() + ":" + cfg.getPort() + "/" + cfg.getDbName() + cfg.getParams();
-        System.out.println(url);
-        return url;
+        return urlPrefix + cfg.getHost() + ":" + cfg.getPort() + "/" + cfg.getDbName() + cfg.getParams();
     }
 
     public Connection createConn() throws ClassNotFoundException, SQLException {

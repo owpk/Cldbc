@@ -1,7 +1,6 @@
 package commands;
 
 import commandListeners.MainClientListener;
-import core.BaseCommand;
 import core.ConnectionManager;
 
 public class AliasParamCmd extends BaseCommand {

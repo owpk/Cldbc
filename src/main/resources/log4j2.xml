@@ -13,7 +13,7 @@
 
     <Loggers>
         <Logger name="commandListeners.AbsCommandListener" level="info" />
-        <Logger name="core.BaseCommand" level="info" />
+        <Logger name="commands.BaseCommand" level="info" />
         <Root level="info">
             <AppenderRef ref="FILE" />
         </Root>

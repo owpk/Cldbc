@@ -1,6 +1,7 @@
 package core;
 
 import connection.DBConnection;
+import connection.MongoDBConn;
 import connection.MySqlConn;
 import connection.PostgresConn;
 import util.ConfigParams;
@@ -38,7 +39,12 @@ public class ConnectionManager {
                     createCon(cfg.getAlias(), new MySqlConn(cfg));
                     break;
                 case "postgres" :
+                case "postgresql" :
                     createCon(cfg.getAlias(), new PostgresConn(cfg));
+                    break;
+                case "mongodb" :
+                case "mongo" :
+                    createCon(cfg.getAlias(), new MongoDBConn(cfg));
                     break;
             }
         }
