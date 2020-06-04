@@ -8,6 +8,8 @@
     </JAVADOC>
     <SOURCES>
       <root url="jar://$MAVEN_REPOSITORY$/org/junit/jupiter/junit-jupiter-api/5.6.2/junit-jupiter-api-5.6.2-sources.jar!/" />
+      <root url="file://$MAVEN_REPOSITORY$/org/junit" />
     </SOURCES>
+    <jarDirectory url="file://$MAVEN_REPOSITORY$/org/junit" recursive="false" type="SOURCES" />
   </library>
 </component>

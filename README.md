@@ -1,9 +1,9 @@
 # Cldbc
-## Cldbc – a tiny command line db connector
+## Cldbc – a tiny command line db client
 
    Structure 
- * `/connection` – Contains JDBC driver class descriptions.
+ * `/cldbc.connection` – Contains JDBC driver class descriptions.
 
- * `/config.xml` – Contains connection configurations.
+ * `/config.xml` – Contains cldbc.connection configurations.
  
-
+    

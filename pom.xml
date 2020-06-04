@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>owpk</groupId>
+    <groupId>cldbc</groupId>
     <artifactId>CommandLineDataBaseClient</artifactId>
     <version>1.0</version>
     <build>
@@ -33,7 +33,7 @@
                     <configuration>
                         <archive>
                             <manifest>
-                                <mainClass>core.App</mainClass>
+                                <mainClass>cldbc.core.App</mainClass>
                             </manifest>
                             <descriptorRefs>
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
