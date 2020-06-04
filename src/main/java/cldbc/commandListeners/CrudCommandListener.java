@@ -228,11 +228,11 @@ public class CrudCommandListener extends BaseListener {
         for (int i = 0; i < arrayOfLists[colInd++].size(); i++) {
             if (colInd == columns)
                 colInd = 0;
-            row++;
             if (row == 1 || row == 0) {
                 Arrays.stream(lines).forEach(System.out::print);
                 System.out.println("");
             }
+            row++;
             for (ArrayList<String> re : arrayOfLists)
                 System.out.print("|" + re.get(i));
             System.out.println("|");
