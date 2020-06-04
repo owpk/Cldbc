@@ -239,8 +239,8 @@ public class CrudCommandListener extends BaseListener {
         }
         Arrays.stream(lines).forEach(System.out::print);
         System.out.println("");
-        System.out.println("DB rows: " + (row - 1));
-        System.out.println("DB columns: " + res.length);
+        System.out.println("rows: " + (row - 1));
+        System.out.println("columns: " + res.length);
     }
 
 
