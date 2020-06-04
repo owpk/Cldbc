@@ -7,7 +7,7 @@
  * `/config.xml` – Contains cldbc.connection configurations.
  
     Supports: Postgresql Mysql MongoDb. 
-    app uses standard sql;
+   
    
     ![img](https://drive.google.com/file/d/1a-w94I8HPHOeMSXtskikwzxktrIj6JnO/view?usp=sharing)
 
