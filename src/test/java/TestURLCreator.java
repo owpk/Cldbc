@@ -11,7 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-public class URLCreatorTest {
+public class TestURLCreator {
     private ConfigParams cfg;
     private DBConnection dbConnection;
     private Field urlPrefix;
