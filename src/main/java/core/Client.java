@@ -32,7 +32,7 @@ public class Client {
     }
 
     public void init() {
-        while (!commandListener.isOver()) {
+        while (!mainListener.isOver()) {
             System.out.print(client.commandListener.getName() + "> ");
             String command = sc.nextLine();
             command = command.toLowerCase().trim();

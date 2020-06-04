@@ -9,8 +9,8 @@ import java.sql.Connection;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class Commands implements CommandInt {
-    private static final Logger logger = LogManager.getLogger(Commands.class.getName());
+public abstract class BaseCommand implements CommandInt {
+    private static final Logger logger = LogManager.getLogger(BaseCommand.class.getName());
     protected List<String> rowCommandsPool;
     protected List<String> rowKeyList;
     protected Map<String, String> paramsPool;
@@ -19,10 +19,10 @@ public abstract class Commands implements CommandInt {
 
     protected Connection connection;
 
-    public Commands() {
+    public BaseCommand() {
     }
 
-    public Commands(String rowCommand) {
+    public BaseCommand(String rowCommand) {
         rowCommandsPool = new ArrayList<>(Arrays.asList(rowCommand.split(" ")));
         rowKeyList = new ArrayList<>();
         paramsPool = new HashMap<>();
@@ -43,14 +43,17 @@ public abstract class Commands implements CommandInt {
 
     public static void showAvailableAliasList() {
         System.out.print("Available aliases: ");
-        ConnectionManager.getManager().getConnectionList().forEach((key, value) -> System.out.print(key + " | "));
+        ConnectionManager.getManager()
+                .getConnectionList()
+                .forEach((key, value) -> System.out.print(key + " | "));
         System.out.println("");
     }
 
     public static void printHelp() {
         MainClientListener.CommandSet[] commands = MainClientListener.CommandSet.values();
         System.out.println("Available commands: ");
-        Arrays.stream(commands).forEach(x -> System.out.println(x.getCommandText() + x.getCommandDescription()));
+        Arrays.stream(commands)
+                .forEach(x -> System.out.println(x.getCommandText() + x.getCommandDescription()));
     }
 
     protected String obtain(int element) {

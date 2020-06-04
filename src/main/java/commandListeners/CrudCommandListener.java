@@ -2,6 +2,7 @@ package commandListeners;
 
 import commands.SetTableCmd;
 import connection.DBConnection;
+import core.BaseListener;
 import core.Client;
 
 import java.sql.Connection;

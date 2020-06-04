@@ -1,15 +1,13 @@
-package commandListeners;
+package core;
 
+import commandListeners.CommandListener;
+import commandListeners.MainClientListener;
 import commands.AliasParamCmd;
 import commands.CommandInt;
-import core.Commands;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.Scanner;
 
 public abstract class BaseListener implements CommandListener {
-    private static final Logger logger = LogManager.getLogger(MainClientListener.class.getName());
     protected Scanner sc;
     protected String listenerName;
     protected boolean over;
@@ -24,13 +22,13 @@ public abstract class BaseListener implements CommandListener {
             commandService(new AliasParamCmd(command));
             return true;
         } else if (command.equals(MainClientListener.CommandSet.ALIAS.getCommandText())) {
-            Commands.showAvailableAliasList();
+            BaseCommand.showAvailableAliasList();
             return true;
         } else if (command.equals(MainClientListener.CommandSet.HELP.getCommandText()) || command.equals("?")) {
-            Commands.printHelp();
+            BaseCommand.printHelp();
             return true;
         } else if (command.equals(MainClientListener.CommandSet.EXIT.getCommandText())) {
-            over = true;
+            Client.getClient().getMainListener().setOver(true);
             close();
             return true;
         } else
@@ -41,16 +39,11 @@ public abstract class BaseListener implements CommandListener {
         System.out.println("Unknown command");
         System.out.println("If you want to init connection: " + MainClientListener.CommandSet.CONNECT.getCommandText() +
                 MainClientListener.CommandSet.CONNECT.getCommandDescription());
-        Commands.printHelp();
+        BaseCommand.printHelp();
     }
+
     protected void commandService(CommandInt c) {
-        try {
-            c.execute();
-        } catch (NullPointerException e) {
-            System.out.println("wrong usage");
-            c.handleException();
-            logger.info(e.getMessage());
-        }
+        c.execute();
     }
 
     @Override
@@ -63,4 +56,7 @@ public abstract class BaseListener implements CommandListener {
         return over;
     }
 
+    public void setOver(boolean over) {
+        this.over = over;
+    }
 }

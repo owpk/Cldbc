@@ -2,11 +2,11 @@ package commands;
 
 import commandListeners.MainClientListener;
 import core.Client;
-import core.Commands;
+import core.BaseCommand;
 import core.ConnectionManager;
 import commandListeners.CrudCommandListener;
 
-public class ConnectionCmd extends Commands implements CommandInt {
+public class ConnectionCmd extends BaseCommand {
     private String alias;
 
     public ConnectionCmd(String command) {
@@ -23,14 +23,12 @@ public class ConnectionCmd extends Commands implements CommandInt {
 
     @Override
     public void execute() {
-        Client.getClient().setCommandListener(
-                new CrudCommandListener(ConnectionManager.getManager().getConnectionList().get(alias))
-        );
-    }
-
-    @Override
-    public void handleException() {
-        printThisCommandHelp();
-        showAvailableAliasList();
+        if (notEmpty()) {
+            Client.getClient().setCommandListener(
+                    new CrudCommandListener(ConnectionManager.getManager().getConnectionList().get(alias))
+            );
+        } else {
+            printThisCommandHelp();
+        }
     }
 }

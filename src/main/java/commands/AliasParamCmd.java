@@ -1,10 +1,10 @@
 package commands;
 
 import commandListeners.MainClientListener;
-import core.Commands;
+import core.BaseCommand;
 import core.ConnectionManager;
 
-public class AliasParamCmd extends Commands implements CommandInt {
+public class AliasParamCmd extends BaseCommand {
     private String alias;
 
     public AliasParamCmd(String command) {
@@ -27,12 +27,10 @@ public class AliasParamCmd extends Commands implements CommandInt {
                             .get(alias)
                             .getCfg()
                             .showParams());
+        } else {
+            printThisCommandHelp();
+            showAvailableAliasList();
         }
     }
 
-    @Override
-    public void handleException() {
-        printThisCommandHelp();
-        showAvailableAliasList();
-    }
 }
