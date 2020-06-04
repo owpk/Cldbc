@@ -34,10 +34,13 @@ public class ConnectionCmd extends BaseCommand {
     @Override
     public void execute() {
         if (notEmpty()) {
-            CrudCommandListener crudCommandListener = new CrudCommandListener(ConnectionManager.getManager().getConnectionList().get(alias));
             try {
+                CrudCommandListener crudCommandListener = new CrudCommandListener(ConnectionManager.getManager().getConnectionList().get(alias));
                 crudCommandListener.createConnection();
                 Client.getClient().setCommandListener(crudCommandListener);
+            } catch (NullPointerException s) {
+                System.out.println("wrong alias");
+                showAvailableAliasList();
             } catch (ClassNotFoundException | SQLException e) {
                 System.out.println(e.getMessage());
                 CrudCommandListener.getLogger().info(e.getStackTrace());

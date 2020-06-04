@@ -94,7 +94,7 @@ public class CrudCommandListener extends BaseListener {
         if (data.matches("\\d+\\s*-\\s*\\d+")) {
             drawTable(selectRow(Integer.parseInt(data.substring(0, data.indexOf("-")).trim()),
                     Integer.parseInt(data.substring(data.indexOf("-") + 1).trim())));
-        } else if (data.matches("\\d")) {
+        } else if (data.matches("\\d+")) {
             drawTable(selectRow(Integer.parseInt(data)));
         } else {
             System.out.println("wrong format");
@@ -169,6 +169,7 @@ public class CrudCommandListener extends BaseListener {
     }
 
     private ArrayList<String>[] selectRow(int index) {
+        System.out.println(index);
         ArrayList<String>[] tempArr = new ArrayList[columns];
         for (int i = 0; i < columns; i++) {
             tempArr[i] = new ArrayList<>();
@@ -179,28 +180,27 @@ public class CrudCommandListener extends BaseListener {
     }
 
     private ArrayList<String>[] selectRow(int start, int end) {
+        start -=1;
+        end -=1;
         colInd = 0;
         ArrayList<String>[] tempArr = new ArrayList[columns];
+        if (end - start <= 0)
+            return null;
 
-        if (start - end <= 0)
-            return tempArr;
-
-        boolean flag = true;
+        boolean flag;
         int index = 0;
-        for (int i = 0; i < columns * (end + 1 - start); i++) {
-            if (colInd++ == columns - 1) {
+        for (int i = 0; i < columns * (end - start); i++) {
+            if (colInd == columns) {
                 index++;
                 colInd = 0;
             }
-            if (i < columns) {
-                flag = true;
+            if (flag = i < columns) {
                 tempArr[colInd] = new ArrayList<>();
             }
             if (flag)
                 tempArr[colInd].add(res[colInd].get(0));
-            tempArr[colInd].add(res[colInd].get(index + start));
-            flag = false;
-
+            tempArr[colInd].add(res[colInd].get(index + 1 + start));
+            colInd++;
         }
         return tempArr;
     }
@@ -209,7 +209,8 @@ public class CrudCommandListener extends BaseListener {
     private void drawTable(ArrayList<String>[] arrayOfLists) {
         colInd = 0;
         String[] lines = new String[columns];
-
+        if (arrayOfLists == null)
+            return;
         //create horizontal lines
         for (ArrayList<String> strings : arrayOfLists) {
             StringBuilder line = new StringBuilder("+");
@@ -222,15 +223,13 @@ public class CrudCommandListener extends BaseListener {
         }
         colInd = 0;
         int row = 0;
-        boolean canWrite;
 
         //print data
-        for (int i = 0; i < arrayOfLists[colInd].size(); i++) {
-            if (colInd++ == columns - 1)
+        for (int i = 0; i < arrayOfLists[colInd++].size(); i++) {
+            if (colInd == columns)
                 colInd = 0;
-            canWrite = row == 1 || row == 0;
             row++;
-            if (canWrite) {
+            if (row == 1 || row == 0) {
                 Arrays.stream(lines).forEach(System.out::print);
                 System.out.println("");
             }
